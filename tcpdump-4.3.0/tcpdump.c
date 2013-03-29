@@ -25,12 +25,13 @@
  *	Seth Webster <swebster@sst.ll.mit.edu>
  */
 
+
 #ifndef lint
 static const char copyright[] _U_ =
-    "@(#) Copyright (c) 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 2000\n\
+"@(#) Copyright (c) 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 2000\n\
 The Regents of the University of California.  All rights reserved.\n";
 static const char rcsid[] _U_ =
-    "@(#) $Header: /tcpdump/master/tcpdump/tcpdump.c,v 1.283 2008-09-25 21:45:50 guy Exp $ (LBL)";
+"@(#) $Header: /tcpdump/master/tcpdump/tcpdump.c,v 1.283 2008-09-25 21:45:50 guy Exp $ (LBL)";
 #endif
 
 /*
@@ -83,6 +84,9 @@ extern int SIZE_BUF;
 #include "gmt2local.h"
 #include "pcap-missing.h"
 
+//definitions for RadioProphet
+#include "def.h"
+
 #ifndef NAME_MAX
 #define NAME_MAX 255
 #endif
@@ -122,7 +126,7 @@ static void dump_packet_and_trunc(u_char *, const struct pcap_pkthdr *, const u_
 static void dump_packet(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void droproot(const char *, const char *);
 static void ndo_error(netdissect_options *ndo, const char *fmt, ...)
-     __attribute__ ((noreturn, format (printf, 2, 3)));
+__attribute__ ((noreturn, format (printf, 2, 3)));
 static void ndo_warning(netdissect_options *ndo, const char *fmt, ...);
 
 #ifdef SIGNAL_REQ_INFO
@@ -130,24 +134,24 @@ RETSIGTYPE requestinfo(int);
 #endif
 
 #if defined(USE_WIN32_MM_TIMER)
-  #include <MMsystem.h>
-  static UINT timer_id;
-  static void CALLBACK verbose_stats_dump(UINT, UINT, DWORD_PTR, DWORD_PTR, DWORD_PTR);
+#include <MMsystem.h>
+static UINT timer_id;
+static void CALLBACK verbose_stats_dump(UINT, UINT, DWORD_PTR, DWORD_PTR, DWORD_PTR);
 #elif defined(HAVE_ALARM)
-  static void verbose_stats_dump(int sig);
+static void verbose_stats_dump(int sig);
 #endif
 
 static void info(int);
 static u_int packets_captured;
 
 struct printer {
-        if_printer f;
+    if_printer f;
 	int type;
 };
 
 
 struct ndo_printer {
-        if_ndo_printer f;
+    if_ndo_printer f;
 	int type;
 };
 
@@ -334,11 +338,11 @@ if_printer
 lookup_printer(int type)
 {
 	struct printer *p;
-
+    
 	for (p = printers; p->f; ++p)
 		if (type == p->type)
 			return p->f;
-
+    
 	return NULL;
 	/* NOTREACHED */
 }
@@ -347,11 +351,11 @@ if_ndo_printer
 lookup_ndo_printer(int type)
 {
 	struct ndo_printer *p;
-
+    
 	for (p = ndo_printers; p->f; ++p)
 		if (type == p->type)
 			return p->f;
-
+    
 	return NULL;
 	/* NOTREACHED */
 }
@@ -365,12 +369,12 @@ extern int opterr;
 extern char *optarg;
 
 struct print_info {
-        netdissect_options *ndo;
-        union {
-                if_printer     printer;
-                if_ndo_printer ndo_printer;
-        } p;
-        int ndo_type;
+    netdissect_options *ndo;
+    union {
+        if_printer     printer;
+        if_ndo_printer ndo_printer;
+    } p;
+    int ndo_type;
 };
 
 struct dump_info {
@@ -388,23 +392,23 @@ show_tstamp_types_and_exit(const char *device, pcap_t *pd)
 	int *tstamp_types = 0;
 	const char *tstamp_type_name;
 	int i;
-
+    
 	n_tstamp_types = pcap_list_tstamp_types(pd, &tstamp_types);
 	if (n_tstamp_types < 0)
 		error("%s", pcap_geterr(pd));
-
+    
 	if (n_tstamp_types == 0) {
 		fprintf(stderr, "Time stamp type cannot be set for %s\n",
-		    device);
+                device);
 		exit(0);
 	}
 	fprintf(stderr, "Time stamp types for %s (use option -j to set):\n",
-	    device);
+            device);
 	for (i = 0; i < n_tstamp_types; i++) {
 		tstamp_type_name = pcap_tstamp_type_val_to_name(tstamp_types[i]);
 		if (tstamp_type_name != NULL) {
 			(void) fprintf(stderr, "  %s (%s)\n", tstamp_type_name,
-			    pcap_tstamp_type_val_to_description(tstamp_types[i]));
+                           pcap_tstamp_type_val_to_description(tstamp_types[i]));
 		} else {
 			(void) fprintf(stderr, "  %d\n", tstamp_types[i]);
 		}
@@ -420,13 +424,13 @@ show_dlts_and_exit(const char *device, pcap_t *pd)
 	int n_dlts;
 	int *dlts = 0;
 	const char *dlt_name;
-
+    
 	n_dlts = pcap_list_datalinks(pd, &dlts);
 	if (n_dlts < 0)
 		error("%s", pcap_geterr(pd));
 	else if (n_dlts == 0 || !dlts)
 		error("No data link types.");
-
+    
 	/*
 	 * If the interface is known to support monitor mode, indicate
 	 * whether these are the data link types available when not in
@@ -437,28 +441,28 @@ show_dlts_and_exit(const char *device, pcap_t *pd)
 	 */
 	if (supports_monitor_mode)
 		(void) fprintf(stderr, "Data link types for %s %s (use option -y to set):\n",
-		    device,
-		    Iflag ? "when in monitor mode" : "when not in monitor mode");
+                       device,
+                       Iflag ? "when in monitor mode" : "when not in monitor mode");
 	else
 		(void) fprintf(stderr, "Data link types for %s (use option -y to set):\n",
-		    device);
-
+                       device);
+    
 	while (--n_dlts >= 0) {
 		dlt_name = pcap_datalink_val_to_name(dlts[n_dlts]);
 		if (dlt_name != NULL) {
 			(void) fprintf(stderr, "  %s (%s)", dlt_name,
-			    pcap_datalink_val_to_description(dlts[n_dlts]));
-
+                           pcap_datalink_val_to_description(dlts[n_dlts]));
+            
 			/*
 			 * OK, does tcpdump handle that type?
 			 */
 			if (lookup_printer(dlts[n_dlts]) == NULL
-                            && lookup_ndo_printer(dlts[n_dlts]) == NULL)
+                && lookup_ndo_printer(dlts[n_dlts]) == NULL)
 				(void) fprintf(stderr, " (printing not supported)");
 			fprintf(stderr, "\n");
 		} else {
 			(void) fprintf(stderr, "  DLT %d (printing not supported)\n",
-			    dlts[n_dlts]);
+                           dlts[n_dlts]);
 		}
 	}
 	pcap_free_datalinks(dlts);
@@ -517,7 +521,7 @@ static void
 droproot(const char *username, const char *chroot_dir)
 {
 	struct passwd *pw = NULL;
-
+    
 	if (chroot_dir && !username) {
 		fprintf(stderr, "tcpdump: Chroot without dropping root is insecure\n");
 		exit(1);
@@ -528,23 +532,23 @@ droproot(const char *username, const char *chroot_dir)
 		if (chroot_dir) {
 			if (chroot(chroot_dir) != 0 || chdir ("/") != 0) {
 				fprintf(stderr, "tcpdump: Couldn't chroot/chdir to '%.64s': %s\n",
-				    chroot_dir, pcap_strerror(errno));
+                        chroot_dir, pcap_strerror(errno));
 				exit(1);
 			}
 		}
 		if (initgroups(pw->pw_name, pw->pw_gid) != 0 ||
 		    setgid(pw->pw_gid) != 0 || setuid(pw->pw_uid) != 0) {
 			fprintf(stderr, "tcpdump: Couldn't change to '%.32s' uid=%lu gid=%lu: %s\n",
-			    username, 
-			    (unsigned long)pw->pw_uid,
-			    (unsigned long)pw->pw_gid,
-			    pcap_strerror(errno));
+                    username,
+                    (unsigned long)pw->pw_uid,
+                    (unsigned long)pw->pw_gid,
+                    pcap_strerror(errno));
 			exit(1);
 		}
 	}
 	else {
 		fprintf(stderr, "tcpdump: Couldn't find user '%.32s'\n",
-		    username);
+                username);
 		exit(1);
 	}
 }
@@ -554,13 +558,13 @@ static int
 getWflagChars(int x)
 {
 	int c = 0;
-
+    
 	x -= 1;
 	while (x > 0) {
 		c += 1;
 		x /= 10;
 	}
-
+    
 	return c;
 }
 
@@ -568,51 +572,54 @@ getWflagChars(int x)
 static void
 MakeFilename(char *buffer, char *orig_name, int cnt, int max_chars)
 {
-        char *filename = malloc(NAME_MAX + 1);
-
-        /* Process with strftime if Gflag is set. */
-        if (Gflag != 0) {
-          struct tm *local_tm;
-
-          /* Convert Gflag_time to a usable format */
-          if ((local_tm = localtime(&Gflag_time)) == NULL) {
-                  error("MakeTimedFilename: localtime");
-          }
-
-          /* There's no good way to detect an error in strftime since a return
-           * value of 0 isn't necessarily failure.
-           */
-          strftime(filename, NAME_MAX, orig_name, local_tm);
-        } else {
-          strncpy(filename, orig_name, NAME_MAX);
+    char *filename = malloc(NAME_MAX + 1);
+    
+    /* Process with strftime if Gflag is set. */
+    if (Gflag != 0) {
+        struct tm *local_tm;
+        
+        /* Convert Gflag_time to a usable format */
+        if ((local_tm = localtime(&Gflag_time)) == NULL) {
+            error("MakeTimedFilename: localtime");
         }
-
+        
+        /* There's no good way to detect an error in strftime since a return
+         * value of 0 isn't necessarily failure.
+         */
+        strftime(filename, NAME_MAX, orig_name, local_tm);
+    } else {
+        strncpy(filename, orig_name, NAME_MAX);
+    }
+    
 	if (cnt == 0 && max_chars == 0)
 		strncpy(buffer, filename, NAME_MAX + 1);
 	else
 		if (snprintf(buffer, NAME_MAX + 1, "%s%0*d", filename, max_chars, cnt) > NAME_MAX)
-                  /* Report an error if the filename is too large */
-                  error("too many output files or filename is too long (> %d)", NAME_MAX);
-        free(filename);
+        /* Report an error if the filename is too large */
+            error("too many output files or filename is too long (> %d)", NAME_MAX);
+    free(filename);
 }
 
 static int tcpdump_printf(netdissect_options *ndo _U_,
-			  const char *fmt, ...)
+                          const char *fmt, ...)
 {
-  
-  va_list args;
-  int ret;
-
-  va_start(args, fmt);
-  ret=vfprintf(stdout, fmt, args);
-  va_end(args);
-
-  return ret;
+    
+    va_list args;
+    int ret;
+    
+    va_start(args, fmt);
+    ret=vfprintf(stdout, fmt, args);
+    va_end(args);
+    
+    return ret;
 }
 
 int
 main(int argc, char **argv)
 {
+    
+    init_global();
+    
 	register int cnt, op, i;
 	bpf_u_int32 localnet, netmask;
 	register char *cp, *infile, *cmdbuf, *device, *RFileName, *WFileName;
@@ -636,9 +643,9 @@ main(int argc, char **argv)
 #ifdef WIN32
 	if(wsockinit() != 0) return 1;
 #endif /* WIN32 */
-
+    
 	jflag=-1;	/* not set */
-        gndo->ndo_Oflag=1;
+    gndo->ndo_Oflag=1;
 	gndo->ndo_Rflag=1;
 	gndo->ndo_dlt=-1;
 	gndo->ndo_default_print=ndo_default_print;
@@ -646,7 +653,7 @@ main(int argc, char **argv)
 	gndo->ndo_error=ndo_error;
 	gndo->ndo_warning=ndo_warning;
 	gndo->ndo_snaplen = DEFAULT_SNAPLEN;
-  
+    
 	cnt = -1;
 	device = NULL;
 	infile = NULL;
@@ -656,394 +663,394 @@ main(int argc, char **argv)
 		program_name = cp + 1;
 	else
 		program_name = argv[0];
-
+    
 	if (abort_on_misalignment(ebuf, sizeof(ebuf)) < 0)
 		error("%s", ebuf);
-
+    
 #ifdef LIBSMI
 	smiInit("tcpdump");
 #endif
-
+    
 	while (
-	    (op = getopt(argc, argv, "aAb" B_FLAG "c:C:d" D_FLAG "eE:fF:G:hHi:" I_FLAG j_FLAG J_FLAG "KlLm:M:nNOpqr:Rs:StT:u" U_FLAG "vw:W:xXy:Yz:Z:")) != -1)
+           (op = getopt(argc, argv, "aAb" B_FLAG "c:C:d" D_FLAG "eE:fF:G:hHi:" I_FLAG j_FLAG J_FLAG "KlLm:M:nNOpqr:Rs:StT:u" U_FLAG "vw:W:xXy:Yz:Z:")) != -1)
 		switch (op) {
-
-		case 'a':
-			/* compatibility for old -a */
-			break;
-
-		case 'A':
-			++Aflag;
-			break;
-
-		case 'b':
-			++bflag;
-			break;
-
+                
+            case 'a':
+                /* compatibility for old -a */
+                break;
+                
+            case 'A':
+                ++Aflag;
+                break;
+                
+            case 'b':
+                ++bflag;
+                break;
+                
 #if defined(HAVE_PCAP_CREATE) || defined(WIN32)
-		case 'B':
-			Bflag = atoi(optarg)*1024;
-			if (Bflag <= 0)
-				error("invalid packet buffer size %s", optarg);
-			break;
+            case 'B':
+                Bflag = atoi(optarg)*1024;
+                if (Bflag <= 0)
+                    error("invalid packet buffer size %s", optarg);
+                break;
 #endif /* defined(HAVE_PCAP_CREATE) || defined(WIN32) */
-
-		case 'c':
-			cnt = atoi(optarg);
-			if (cnt <= 0)
-				error("invalid packet count %s", optarg);
-			break;
-
-		case 'C':
-			Cflag = atoi(optarg) * 1000000;
-			if (Cflag < 0)
-				error("invalid file size %s", optarg);
-			break;
-
-		case 'd':
-			++dflag;
-			break;
-
+                
+            case 'c':
+                cnt = atoi(optarg);
+                if (cnt <= 0)
+                    error("invalid packet count %s", optarg);
+                break;
+                
+            case 'C':
+                Cflag = atoi(optarg) * 1000000;
+                if (Cflag < 0)
+                    error("invalid file size %s", optarg);
+                break;
+                
+            case 'd':
+                ++dflag;
+                break;
+                
 #ifdef HAVE_PCAP_FINDALLDEVS
-		case 'D':
-			if (pcap_findalldevs(&devpointer, ebuf) < 0)
-				error("%s", ebuf);
-			else {
-				for (i = 0; devpointer != 0; i++) {
-					printf("%d.%s", i+1, devpointer->name);
-					if (devpointer->description != NULL)
-						printf(" (%s)", devpointer->description);
-					printf("\n");
-					devpointer = devpointer->next;
-				}
-			}
-			return 0;
+            case 'D':
+                if (pcap_findalldevs(&devpointer, ebuf) < 0)
+                    error("%s", ebuf);
+                else {
+                    for (i = 0; devpointer != 0; i++) {
+                        printf("%d.%s", i+1, devpointer->name);
+                        if (devpointer->description != NULL)
+                            printf(" (%s)", devpointer->description);
+                        printf("\n");
+                        devpointer = devpointer->next;
+                    }
+                }
+                return 0;
 #endif /* HAVE_PCAP_FINDALLDEVS */
-
-		case 'L':
-			Lflag++;
-			break;
-
-		case 'e':
-			++eflag;
-			break;
-
-		case 'E':
+                
+            case 'L':
+                Lflag++;
+                break;
+                
+            case 'e':
+                ++eflag;
+                break;
+                
+            case 'E':
 #ifndef HAVE_LIBCRYPTO
-			warning("crypto code not compiled in");
+                warning("crypto code not compiled in");
 #endif
-			gndo->ndo_espsecret = optarg;
-			break;
-
-		case 'f':
-			++fflag;
-			break;
-
-		case 'F':
-			infile = optarg;
-			break;
-
-		case 'G':
-			Gflag = atoi(optarg);
-			if (Gflag < 0)
-				error("invalid number of seconds %s", optarg);
-
-                        /* We will create one file initially. */
-                        Gflag_count = 0;
-
-			/* Grab the current time for rotation use. */
-			if ((Gflag_time = time(NULL)) == (time_t)-1) {
-				error("main: can't get current time: %s",
-				    pcap_strerror(errno));
-			}
-			break;
-
-		case 'h':
-			usage();
-			break;
-
-		case 'H':
-			++Hflag;
-			break;
-
-		case 'i':
-			if (optarg[0] == '0' && optarg[1] == 0)
-				error("Invalid adapter index");
-			
+                gndo->ndo_espsecret = optarg;
+                break;
+                
+            case 'f':
+                ++fflag;
+                break;
+                
+            case 'F':
+                infile = optarg;
+                break;
+                
+            case 'G':
+                Gflag = atoi(optarg);
+                if (Gflag < 0)
+                    error("invalid number of seconds %s", optarg);
+                
+                /* We will create one file initially. */
+                Gflag_count = 0;
+                
+                /* Grab the current time for rotation use. */
+                if ((Gflag_time = time(NULL)) == (time_t)-1) {
+                    error("main: can't get current time: %s",
+                          pcap_strerror(errno));
+                }
+                break;
+                
+            case 'h':
+                usage();
+                break;
+                
+            case 'H':
+                ++Hflag;
+                break;
+                
+            case 'i':
+                if (optarg[0] == '0' && optarg[1] == 0)
+                    error("Invalid adapter index");
+                
 #ifdef HAVE_PCAP_FINDALLDEVS
-			/*
-			 * If the argument is a number, treat it as
-			 * an index into the list of adapters, as
-			 * printed by "tcpdump -D".
-			 *
-			 * This should be OK on UNIX systems, as interfaces
-			 * shouldn't have names that begin with digits.
-			 * It can be useful on Windows, where more than
-			 * one interface can have the same name.
-			 */
-			if ((devnum = atoi(optarg)) != 0) {
-				if (devnum < 0)
-					error("Invalid adapter index");
-
-				if (pcap_findalldevs(&devpointer, ebuf) < 0)
-					error("%s", ebuf);
-				else {
-					/*
-					 * Look for the devnum-th entry
-					 * in the list of devices
-					 * (1-based).
-					 */
-					for (i = 0;
-					    i < devnum-1 && devpointer != NULL;
-					    i++, devpointer = devpointer->next)
-						;
-					if (devpointer == NULL)
-						error("Invalid adapter index");
-				}
-				device = devpointer->name;
-				break;
-			}
+                /*
+                 * If the argument is a number, treat it as
+                 * an index into the list of adapters, as
+                 * printed by "tcpdump -D".
+                 *
+                 * This should be OK on UNIX systems, as interfaces
+                 * shouldn't have names that begin with digits.
+                 * It can be useful on Windows, where more than
+                 * one interface can have the same name.
+                 */
+                if ((devnum = atoi(optarg)) != 0) {
+                    if (devnum < 0)
+                        error("Invalid adapter index");
+                    
+                    if (pcap_findalldevs(&devpointer, ebuf) < 0)
+                        error("%s", ebuf);
+                    else {
+                        /*
+                         * Look for the devnum-th entry
+                         * in the list of devices
+                         * (1-based).
+                         */
+                        for (i = 0;
+                             i < devnum-1 && devpointer != NULL;
+                             i++, devpointer = devpointer->next)
+                            ;
+                        if (devpointer == NULL)
+                            error("Invalid adapter index");
+                    }
+                    device = devpointer->name;
+                    break;
+                }
 #endif /* HAVE_PCAP_FINDALLDEVS */
-			device = optarg;
-			break;
-
+                device = optarg;
+                break;
+                
 #ifdef HAVE_PCAP_CREATE
-		case 'I':
-			++Iflag;
-			break;
+            case 'I':
+                ++Iflag;
+                break;
 #endif /* HAVE_PCAP_CREATE */
-
+                
 #ifdef HAVE_PCAP_SET_TSTAMP_TYPE
-		case 'j':
-			jflag = pcap_tstamp_type_name_to_val(optarg);
-			if (jflag < 0)
-				error("invalid time stamp type %s", optarg);
-			break;
-
-		case 'J':
-			Jflag++;
-			break;
+            case 'j':
+                jflag = pcap_tstamp_type_name_to_val(optarg);
+                if (jflag < 0)
+                    error("invalid time stamp type %s", optarg);
+                break;
+                
+            case 'J':
+                Jflag++;
+                break;
 #endif
-
-		case 'l':
+                
+            case 'l':
 #ifdef WIN32
-			/*
-			 * _IOLBF is the same as _IOFBF in Microsoft's C
-			 * libraries; the only alternative they offer
-			 * is _IONBF.
-			 *
-			 * XXX - this should really be checking for MSVC++,
-			 * not WIN32, if, for example, MinGW has its own
-			 * C library that is more UNIX-compatible.
-			 */
-			setvbuf(stdout, NULL, _IONBF, 0);
+                /*
+                 * _IOLBF is the same as _IOFBF in Microsoft's C
+                 * libraries; the only alternative they offer
+                 * is _IONBF.
+                 *
+                 * XXX - this should really be checking for MSVC++,
+                 * not WIN32, if, for example, MinGW has its own
+                 * C library that is more UNIX-compatible.
+                 */
+                setvbuf(stdout, NULL, _IONBF, 0);
 #else /* WIN32 */
 #ifdef HAVE_SETLINEBUF
-			setlinebuf(stdout);
+                setlinebuf(stdout);
 #else
-			setvbuf(stdout, NULL, _IOLBF, 0);
+                setvbuf(stdout, NULL, _IOLBF, 0);
 #endif
 #endif /* WIN32 */
-			break;
-
-		case 'K':
-			++Kflag;
-			break;
-
-		case 'm':
+                break;
+                
+            case 'K':
+                ++Kflag;
+                break;
+                
+            case 'm':
 #ifdef LIBSMI
-			if (smiLoadModule(optarg) == 0) {
-				error("could not load MIB module %s", optarg);
-			}
-			sflag = 1;
+                if (smiLoadModule(optarg) == 0) {
+                    error("could not load MIB module %s", optarg);
+                }
+                sflag = 1;
 #else
-			(void)fprintf(stderr, "%s: ignoring option `-m %s' ",
-				      program_name, optarg);
-			(void)fprintf(stderr, "(no libsmi support)\n");
+                (void)fprintf(stderr, "%s: ignoring option `-m %s' ",
+                              program_name, optarg);
+                (void)fprintf(stderr, "(no libsmi support)\n");
 #endif
-			break;
-
-		case 'M':
-			/* TCP-MD5 shared secret */
+                break;
+                
+            case 'M':
+                /* TCP-MD5 shared secret */
 #ifndef HAVE_LIBCRYPTO
-			warning("crypto code not compiled in");
+                warning("crypto code not compiled in");
 #endif
-			sigsecret = optarg;
-			break;
-
-		case 'n':
-			++nflag;
-			break;
-
-		case 'N':
-			++Nflag;
-			break;
-
-		case 'O':
-			Oflag = 0;
-			break;
-
-		case 'p':
-			++pflag;
-			break;
-
-		case 'q':
-			++qflag;
-			++suppress_default_print;
-			break;
-
-		case 'r':
-			RFileName = optarg;
-			break;
-
-		case 'R':
-			Rflag = 0;
-			break;
-
-		case 's': {
-			char *end;
-
-			snaplen = strtol(optarg, &end, 0);
-			if (optarg == end || *end != '\0'
-			    || snaplen < 0 || snaplen > MAXIMUM_SNAPLEN)
-				error("invalid snaplen %s", optarg);
-			else if (snaplen == 0)
-				snaplen = MAXIMUM_SNAPLEN;
-			break;
-		}
-
-		case 'S':
-			++Sflag;
-			break;
-
-		case 't':
-			++tflag;
-			break;
-
-		case 'T':
-			if (strcasecmp(optarg, "vat") == 0)
-				packettype = PT_VAT;
-			else if (strcasecmp(optarg, "wb") == 0)
-				packettype = PT_WB;
-			else if (strcasecmp(optarg, "rpc") == 0)
-				packettype = PT_RPC;
-			else if (strcasecmp(optarg, "rtp") == 0)
-				packettype = PT_RTP;
-			else if (strcasecmp(optarg, "rtcp") == 0)
-				packettype = PT_RTCP;
-			else if (strcasecmp(optarg, "snmp") == 0)
-				packettype = PT_SNMP;
-			else if (strcasecmp(optarg, "cnfp") == 0)
-				packettype = PT_CNFP;
-			else if (strcasecmp(optarg, "tftp") == 0)
-				packettype = PT_TFTP;
-			else if (strcasecmp(optarg, "aodv") == 0)
-				packettype = PT_AODV;
-			else if (strcasecmp(optarg, "carp") == 0)
-				packettype = PT_CARP;
-			else
-				error("unknown packet type `%s'", optarg);
-			break;
-
-		case 'u':
-			++uflag;
-			break;
-
+                sigsecret = optarg;
+                break;
+                
+            case 'n':
+                ++nflag;
+                break;
+                
+            case 'N':
+                ++Nflag;
+                break;
+                
+            case 'O':
+                Oflag = 0;
+                break;
+                
+            case 'p':
+                ++pflag;
+                break;
+                
+            case 'q':
+                ++qflag;
+                ++suppress_default_print;
+                break;
+                
+            case 'r':
+                RFileName = optarg;
+                break;
+                
+            case 'R':
+                Rflag = 0;
+                break;
+                
+            case 's': {
+                char *end;
+                
+                snaplen = strtol(optarg, &end, 0);
+                if (optarg == end || *end != '\0'
+                    || snaplen < 0 || snaplen > MAXIMUM_SNAPLEN)
+                    error("invalid snaplen %s", optarg);
+                else if (snaplen == 0)
+                    snaplen = MAXIMUM_SNAPLEN;
+                break;
+            }
+                
+            case 'S':
+                ++Sflag;
+                break;
+                
+            case 't':
+                ++tflag;
+                break;
+                
+            case 'T':
+                if (strcasecmp(optarg, "vat") == 0)
+                    packettype = PT_VAT;
+                else if (strcasecmp(optarg, "wb") == 0)
+                    packettype = PT_WB;
+                else if (strcasecmp(optarg, "rpc") == 0)
+                    packettype = PT_RPC;
+                else if (strcasecmp(optarg, "rtp") == 0)
+                    packettype = PT_RTP;
+                else if (strcasecmp(optarg, "rtcp") == 0)
+                    packettype = PT_RTCP;
+                else if (strcasecmp(optarg, "snmp") == 0)
+                    packettype = PT_SNMP;
+                else if (strcasecmp(optarg, "cnfp") == 0)
+                    packettype = PT_CNFP;
+                else if (strcasecmp(optarg, "tftp") == 0)
+                    packettype = PT_TFTP;
+                else if (strcasecmp(optarg, "aodv") == 0)
+                    packettype = PT_AODV;
+                else if (strcasecmp(optarg, "carp") == 0)
+                    packettype = PT_CARP;
+                else
+                    error("unknown packet type `%s'", optarg);
+                break;
+                
+            case 'u':
+                ++uflag;
+                break;
+                
 #ifdef HAVE_PCAP_DUMP_FLUSH
-		case 'U':
-			++Uflag;
-			break;
+            case 'U':
+                ++Uflag;
+                break;
 #endif
-
-		case 'v':
-			++vflag;
-			break;
-
-		case 'w':
-			WFileName = optarg;
-			break;
-
-		case 'W':
-			Wflag = atoi(optarg);
-			if (Wflag < 0) 
-				error("invalid number of output files %s", optarg);
-			WflagChars = getWflagChars(Wflag);
-			break;
-
-		case 'x':
-			++xflag;
-			++suppress_default_print;
-			break;
-
-		case 'X':
-			++Xflag;
-			++suppress_default_print;
-			break;
-
-		case 'y':
-			gndo->ndo_dltname = optarg;
-			gndo->ndo_dlt =
-			  pcap_datalink_name_to_val(gndo->ndo_dltname);
-			if (gndo->ndo_dlt < 0)
-				error("invalid data link type %s", gndo->ndo_dltname);
-			break;
-
+                
+            case 'v':
+                ++vflag;
+                break;
+                
+            case 'w':
+                WFileName = optarg;
+                break;
+                
+            case 'W':
+                Wflag = atoi(optarg);
+                if (Wflag < 0)
+                    error("invalid number of output files %s", optarg);
+                WflagChars = getWflagChars(Wflag);
+                break;
+                
+            case 'x':
+                ++xflag;
+                ++suppress_default_print;
+                break;
+                
+            case 'X':
+                ++Xflag;
+                ++suppress_default_print;
+                break;
+                
+            case 'y':
+                gndo->ndo_dltname = optarg;
+                gndo->ndo_dlt =
+                pcap_datalink_name_to_val(gndo->ndo_dltname);
+                if (gndo->ndo_dlt < 0)
+                    error("invalid data link type %s", gndo->ndo_dltname);
+                break;
+                
 #if defined(HAVE_PCAP_DEBUG) || defined(HAVE_YYDEBUG)
-		case 'Y':
+            case 'Y':
 			{
-			/* Undocumented flag */
+                /* Undocumented flag */
 #ifdef HAVE_PCAP_DEBUG
-			extern int pcap_debug;
-			pcap_debug = 1;
+                extern int pcap_debug;
+                pcap_debug = 1;
 #else
-			extern int yydebug;
-			yydebug = 1;
+                extern int yydebug;
+                yydebug = 1;
 #endif
 			}
-			break;
+                break;
 #endif
-		case 'z':
-			if (optarg) {
-				zflag = strdup(optarg);
-			} else {
-				usage();
-				/* NOTREACHED */
-			}
-			break;
-
-		case 'Z':
-			if (optarg) {
-				username = strdup(optarg);
-			}
-			else {
-				usage();
-				/* NOTREACHED */
-			}
-			break;
-
-		default:
-			usage();
-			/* NOTREACHED */
+            case 'z':
+                if (optarg) {
+                    zflag = strdup(optarg);
+                } else {
+                    usage();
+                    /* NOTREACHED */
+                }
+                break;
+                
+            case 'Z':
+                if (optarg) {
+                    username = strdup(optarg);
+                }
+                else {
+                    usage();
+                    /* NOTREACHED */
+                }
+                break;
+                
+            default:
+                usage();
+                /* NOTREACHED */
 		}
-
+    
 	switch (tflag) {
-
-	case 0: /* Default */
-	case 4: /* Default + Date*/
-		thiszone = gmt2local(0);
-		break;
-
-	case 1: /* No time stamp */
-	case 2: /* Unix timeval style */
-	case 3: /* Microseconds since previous packet */
+            
+        case 0: /* Default */
+        case 4: /* Default + Date*/
+            thiszone = gmt2local(0);
+            break;
+            
+        case 1: /* No time stamp */
+        case 2: /* Unix timeval style */
+        case 3: /* Microseconds since previous packet */
         case 5: /* Microseconds since first packet */
-		break;
-
-	default: /* Not supported */
-		error("only -t, -tt, -ttt, -tttt and -ttttt are supported");
-		break;
+            break;
+            
+        default: /* Not supported */
+            error("only -t, -tt, -ttt, -tttt and -ttttt are supported");
+            break;
 	}
-
+    
 #ifdef WITH_CHROOT
 	/* if run as root, prepare for chrooting */
 	if (getuid() == 0 || geteuid() == 0) {
@@ -1052,20 +1059,20 @@ main(int argc, char **argv)
 			chroot_dir = WITH_CHROOT;
 	}
 #endif
-
+    
 #ifdef WITH_USER
 	/* if run as root, prepare for dropping root privileges */
 	if (getuid() == 0 || geteuid() == 0) {
-		/* Run with '-Z root' to restore old behaviour */ 
+		/* Run with '-Z root' to restore old behaviour */
 		if (!username)
 			username = WITH_USER;
 	}
 #endif
-
+    
 	if (RFileName != NULL) {
 		int dlt;
 		const char *dlt_name;
-
+        
 #ifndef WIN32
 		/*
 		 * We don't need network access, so relinquish any set-UID
@@ -1086,12 +1093,12 @@ main(int argc, char **argv)
 		dlt_name = pcap_datalink_val_to_name(dlt);
 		if (dlt_name == NULL) {
 			fprintf(stderr, "reading from file %s, link-type %u\n",
-			    RFileName, dlt);
+                    RFileName, dlt);
 		} else {
 			fprintf(stderr,
-			    "reading from file %s, link-type %s (%s)\n",
-			    RFileName, dlt_name,
-			    pcap_datalink_val_to_description(dlt));
+                    "reading from file %s, link-type %s (%s)\n",
+                    RFileName, dlt_name,
+                    pcap_datalink_val_to_description(dlt));
 		}
 		localnet = 0;
 		netmask = 0;
@@ -1112,8 +1119,8 @@ main(int argc, char **argv)
 		{
 			fprintf(stderr, "%s: listening on %s\n", program_name, device);
 		}
-
-		fflush(stderr);	
+        
+		fflush(stderr);
 #endif /* WIN32 */
 #ifdef HAVE_PCAP_CREATE
 		pd = pcap_create(device, ebuf);
@@ -1133,33 +1140,33 @@ main(int argc, char **argv)
 		status = pcap_set_snaplen(pd, snaplen);
 		if (status != 0)
 			error("%s: Can't set snapshot length: %s",
-			    device, pcap_statustostr(status));
+                  device, pcap_statustostr(status));
 		status = pcap_set_promisc(pd, !pflag);
 		if (status != 0)
 			error("%s: Can't set promiscuous mode: %s",
-			    device, pcap_statustostr(status));
+                  device, pcap_statustostr(status));
 		if (Iflag) {
 			status = pcap_set_rfmon(pd, 1);
 			if (status != 0)
 				error("%s: Can't set monitor mode: %s",
-				    device, pcap_statustostr(status));
+                      device, pcap_statustostr(status));
 		}
 		status = pcap_set_timeout(pd, 1000);
 		if (status != 0)
 			error("%s: pcap_set_timeout failed: %s",
-			    device, pcap_statustostr(status));
+                  device, pcap_statustostr(status));
 		if (Bflag != 0) {
 			status = pcap_set_buffer_size(pd, Bflag);
 			if (status != 0)
 				error("%s: Can't set buffer size: %s",
-				    device, pcap_statustostr(status));
+                      device, pcap_statustostr(status));
 		}
 #ifdef HAVE_PCAP_SET_TSTAMP_TYPE
-                if (jflag != -1) {
+        if (jflag != -1) {
 			status = pcap_set_tstamp_type(pd, jflag);
 			if (status < 0)
 				error("%s: Can't set time stamp type: %s",
-			    	    device, pcap_statustostr(status));
+                      device, pcap_statustostr(status));
 		}
 #endif
 		status = pcap_activate(pd);
@@ -1174,10 +1181,10 @@ main(int argc, char **argv)
 			          status == PCAP_ERROR_PERM_DENIED) &&
 			         *cp != '\0')
 				error("%s: %s\n(%s)", device,
-				    pcap_statustostr(status), cp);
+                      pcap_statustostr(status), cp);
 			else
 				error("%s: %s", device,
-				    pcap_statustostr(status));
+                      pcap_statustostr(status));
 		} else if (status > 0) {
 			/*
 			 * pcap_activate() succeeded, but it's warning us
@@ -1189,10 +1196,10 @@ main(int argc, char **argv)
 			else if (status == PCAP_WARNING_PROMISC_NOTSUP &&
 			         *cp != '\0')
 				warning("%s: %s\n(%s)", device,
-				    pcap_statustostr(status), cp);
+                        pcap_statustostr(status), cp);
 			else
 				warning("%s: %s", device,
-				    pcap_statustostr(status));
+                        pcap_statustostr(status));
 		}
 #else
 		*ebuf = '\0';
@@ -1233,7 +1240,7 @@ main(int argc, char **argv)
 			}
 #endif
 			(void)fprintf(stderr, "%s: data link type %s\n",
-				      program_name, gndo->ndo_dltname);
+                          program_name, gndo->ndo_dltname);
 			(void)fflush(stderr);
 		}
 		i = pcap_snapshot(pd);
@@ -1251,7 +1258,7 @@ main(int argc, char **argv)
 		cmdbuf = read_infile(infile);
 	else
 		cmdbuf = copy_argv(&argv[optind]);
-
+    
 	if (pcap_compile(pd, &fcode, cmdbuf, Oflag, netmask) < 0)
 		error("%s", pcap_geterr(pd));
 	free(cmdbuf);
@@ -1261,9 +1268,9 @@ main(int argc, char **argv)
 		exit(0);
 	}
 	init_addrtoname(localnet, netmask);
-        init_checksum();
-
-#ifndef WIN32	
+    init_checksum();
+    
+#ifndef WIN32
 	(void)setsignal(SIGPIPE, cleanup);
 	(void)setsignal(SIGTERM, cleanup);
 	(void)setsignal(SIGINT, cleanup);
@@ -1272,11 +1279,11 @@ main(int argc, char **argv)
 	(void)setsignal(SIGCHLD, child_cleanup);
 #endif
 	/* Cooperate with nohup(1) */
-#ifndef WIN32	
+#ifndef WIN32
 	if ((oldhandler = setsignal(SIGHUP, cleanup)) != SIG_DFL)
 		(void)setsignal(SIGHUP, oldhandler);
 #endif /* WIN32 */
-
+    
 #ifndef WIN32
 	/*
 	 * If a user name was specified with "-Z", attempt to switch to
@@ -1300,23 +1307,23 @@ main(int argc, char **argv)
 			droproot(username, chroot_dir);
 	}
 #endif /* WIN32 */
-
+    
 	if (pcap_setfilter(pd, &fcode) < 0)
 		error("%s", pcap_geterr(pd));
 	if (WFileName) {
 		pcap_dumper_t *p;
 		/* Do not exceed the default NAME_MAX for files. */
 		dumpinfo.CurrentFileName = (char *)malloc(NAME_MAX + 1);
-
+        
 		if (dumpinfo.CurrentFileName == NULL)
 			error("malloc of dumpinfo.CurrentFileName");
-
+        
 		/* We do not need numbering for dumpfiles if Cflag isn't set. */
 		if (Cflag != 0)
-		  MakeFilename(dumpinfo.CurrentFileName, WFileName, 0, WflagChars);
+            MakeFilename(dumpinfo.CurrentFileName, WFileName, 0, WflagChars);
 		else
-		  MakeFilename(dumpinfo.CurrentFileName, WFileName, 0, 0);
-
+            MakeFilename(dumpinfo.CurrentFileName, WFileName, 0, 0);
+        
 		p = pcap_dump_open(pd, dumpinfo.CurrentFileName);
 		if (p == NULL)
 			error("%s", pcap_geterr(pd));
@@ -1336,25 +1343,25 @@ main(int argc, char **argv)
 #endif
 	} else {
 		type = pcap_datalink(pd);
-                printinfo.ndo_type = 1;
-                printinfo.ndo = gndo;
+        printinfo.ndo_type = 1;
+        printinfo.ndo = gndo;
 		printinfo.p.ndo_printer = lookup_ndo_printer(type);
-                if (printinfo.p.ndo_printer == NULL) {
-                        printinfo.p.printer = lookup_printer(type);
-                        printinfo.ndo_type = 0;
-                        if (printinfo.p.printer == NULL) {
-                                gndo->ndo_dltname = pcap_datalink_val_to_name(type);
-                                if (gndo->ndo_dltname != NULL)
-                                        error("packet printing is not supported for link type %s: use -w",
-                                              gndo->ndo_dltname);
-                                else
-                                        error("packet printing is not supported for link type %d: use -w", type);
-                        }
-                }
+        if (printinfo.p.ndo_printer == NULL) {
+            printinfo.p.printer = lookup_printer(type);
+            printinfo.ndo_type = 0;
+            if (printinfo.p.printer == NULL) {
+                gndo->ndo_dltname = pcap_datalink_val_to_name(type);
+                if (gndo->ndo_dltname != NULL)
+                    error("packet printing is not supported for link type %s: use -w",
+                          gndo->ndo_dltname);
+                else
+                    error("packet printing is not supported for link type %d: use -w", type);
+            }
+        }
 		callback = print_packet;
 		pcap_userdata = (u_char *)&printinfo;
 	}
-
+    
 #ifdef SIGNAL_REQ_INFO
 	/*
 	 * We can't get statistics when reading from a file rather
@@ -1363,7 +1370,7 @@ main(int argc, char **argv)
 	if (RFileName == NULL)
 		(void)setsignal(SIGNAL_REQ_INFO, requestinfo);
 #endif
-
+    
 	if (vflag > 0 && WFileName) {
 		/*
 		 * When capturing to a file, "-v" means tcpdump should,
@@ -1379,27 +1386,27 @@ main(int argc, char **argv)
 		alarm(1);
 #endif
 	}
-
+    
 #ifndef WIN32
 	if (RFileName == NULL) {
 		int dlt;
 		const char *dlt_name;
-
+        
 		if (!vflag && !WFileName) {
 			(void)fprintf(stderr,
-			    "%s: verbose output suppressed, use -v or -vv for full protocol decode\n",
-			    program_name);
+                          "%s: verbose output suppressed, use -v or -vv for full protocol decode\n",
+                          program_name);
 		} else
 			(void)fprintf(stderr, "%s: ", program_name);
 		dlt = pcap_datalink(pd);
 		dlt_name = pcap_datalink_val_to_name(dlt);
 		if (dlt_name == NULL) {
 			(void)fprintf(stderr, "listening on %s, link-type %u, capture size %u bytes\n",
-			    device, dlt, snaplen);
+                          device, dlt, snaplen);
 		} else {
 			(void)fprintf(stderr, "listening on %s, link-type %s (%s), capture size %u bytes\n",
-			    device, dlt_name,
-			    pcap_datalink_val_to_description(dlt), snaplen);
+                          device, dlt_name,
+                          pcap_datalink_val_to_description(dlt), snaplen);
 		}
 		(void)fflush(stderr);
 	}
@@ -1425,7 +1432,7 @@ main(int argc, char **argv)
 		 * Error.  Report it.
 		 */
 		(void)fprintf(stderr, "%s: pcap_loop: %s\n",
-		    program_name, pcap_geterr(pd));
+                      program_name, pcap_geterr(pd));
 	}
 	if (RFileName == NULL) {
 		/*
@@ -1449,7 +1456,7 @@ cleanup(int signo _U_)
 #elif defined(HAVE_ALARM)
 	alarm(0);
 #endif
-
+    
 #ifdef HAVE_PCAP_BREAKLOOP
 	/*
 	 * We have "pcap_breakloop()"; use it, so that we do as little
@@ -1480,14 +1487,14 @@ cleanup(int signo _U_)
 }
 
 /*
-  On windows, we do not use a fork, so we do not care less about
-  waiting a child processes to die
+ On windows, we do not use a fork, so we do not care less about
+ waiting a child processes to die
  */
 #if defined(HAVE_FORK) || defined(HAVE_VFORK)
 static RETSIGTYPE
 child_cleanup(int signo _U_)
 {
-  wait(NULL);
+    wait(NULL);
 }
 #endif /* HAVE_FORK && HAVE_VFORK */
 
@@ -1495,7 +1502,7 @@ static void
 info(register int verbose)
 {
 	struct pcap_stat stat;
-
+    
 	/*
 	 * Older versions of libpcap didn't set ps_ifdrop on some
 	 * platforms; initialize it to 0 to handle that.
@@ -1506,31 +1513,31 @@ info(register int verbose)
 		infoprint = 0;
 		return;
 	}
-
+    
 	if (!verbose)
 		fprintf(stderr, "%s: ", program_name);
-
+    
 	(void)fprintf(stderr, "%u packet%s captured", packets_captured,
-	    PLURAL_SUFFIX(packets_captured));
+                  PLURAL_SUFFIX(packets_captured));
 	if (!verbose)
 		fputs(", ", stderr);
 	else
 		putc('\n', stderr);
 	(void)fprintf(stderr, "%u packet%s received by filter", stat.ps_recv,
-	    PLURAL_SUFFIX(stat.ps_recv));
+                  PLURAL_SUFFIX(stat.ps_recv));
 	if (!verbose)
 		fputs(", ", stderr);
 	else
 		putc('\n', stderr);
 	(void)fprintf(stderr, "%u packet%s dropped by kernel", stat.ps_drop,
-	    PLURAL_SUFFIX(stat.ps_drop));
+                  PLURAL_SUFFIX(stat.ps_drop));
 	if (stat.ps_ifdrop != 0) {
 		if (!verbose)
 			fputs(", ", stderr);
 		else
 			putc('\n', stderr);
 		(void)fprintf(stderr, "%u packet%s dropped by interface\n",
-		    stat.ps_ifdrop, PLURAL_SUFFIX(stat.ps_ifdrop));
+                      stat.ps_ifdrop, PLURAL_SUFFIX(stat.ps_ifdrop));
 	} else
 		putc('\n', stderr);
 	infoprint = 0;
@@ -1543,9 +1550,9 @@ compress_savefile(const char *filename)
 # ifdef HAVE_FORK
 	if (fork())
 # else
-	if (vfork())
+        if (vfork())
 # endif
-		return;
+            return;
 	/*
 	 * Set to lowest priority so that this doesn't disturb the capture
 	 */
@@ -1556,10 +1563,10 @@ compress_savefile(const char *filename)
 #endif
 	if (execlp(zflag, zflag, filename, (char *)NULL) == -1)
 		fprintf(stderr,
-			"compress_savefile:execlp(%s, %s): %s\n",
-			zflag,
-			filename,
-			strerror(errno));
+                "compress_savefile:execlp(%s, %s): %s\n",
+                zflag,
+                filename,
+                strerror(errno));
 # ifdef HAVE_FORK
 	exit(1);
 # else
@@ -1571,7 +1578,7 @@ static void
 compress_savefile(const char *filename)
 {
 	fprintf(stderr,
-		"compress_savefile failed. Functionality not implemented under your system\n");
+            "compress_savefile failed. Functionality not implemented under your system\n");
 }
 #endif /* HAVE_FORK && HAVE_VFORK */
 
@@ -1579,13 +1586,13 @@ static void
 dump_packet_and_trunc(u_char *user, const struct pcap_pkthdr *h, const u_char *sp)
 {
 	struct dump_info *dump_info;
-
+    
 	++packets_captured;
-
+    
 	++infodelay;
-
+    
 	dump_info = (struct dump_info *)user;
-
+    
 	/*
 	 * XXX - this won't force the file to rotate on the specified time
 	 * boundary, but it will rotate on the first packet received after the
@@ -1597,14 +1604,14 @@ dump_packet_and_trunc(u_char *user, const struct pcap_pkthdr *h, const u_char *s
 	if (Gflag != 0) {
 		/* Check if it is time to rotate */
 		time_t t;
-
+        
 		/* Get the current time */
 		if ((t = time(NULL)) == (time_t)-1) {
 			error("dump_and_trunc_packet: can't get current_time: %s",
-			    pcap_strerror(errno));
+                  pcap_strerror(errno));
 		}
-
-
+        
+        
 		/* If the time is greater than the specified window, rotate */
 		if (t - Gflag_time >= Gflag) {
 			/* Update the Gflag_time */
@@ -1615,20 +1622,20 @@ dump_packet_and_trunc(u_char *user, const struct pcap_pkthdr *h, const u_char *s
 			 * Close the current file and open a new one.
 			 */
 			pcap_dump_close(dump_info->p);
-
+            
 			/*
 			 * Compress the file we just closed, if the user asked for it
 			 */
 			if (zflag != NULL)
 				compress_savefile(dump_info->CurrentFileName);
-
+            
 			/*
 			 * Check to see if we've exceeded the Wflag (when
 			 * not using Cflag).
 			 */
 			if (Cflag == 0 && Wflag > 0 && Gflag_count >= Wflag) {
 				(void)fprintf(stderr, "Maximum file limit reached: %d\n",
-				    Wflag);
+                              Wflag);
 				exit(0);
 				/* NOTREACHED */
 			}
@@ -1645,16 +1652,16 @@ dump_packet_and_trunc(u_char *user, const struct pcap_pkthdr *h, const u_char *s
 			 */
 			if (Cflag != 0)
 				MakeFilename(dump_info->CurrentFileName, dump_info->WFileName, 0,
-				    WflagChars);
+                             WflagChars);
 			else
 				MakeFilename(dump_info->CurrentFileName, dump_info->WFileName, 0, 0);
-
+            
 			dump_info->p = pcap_dump_open(dump_info->pd, dump_info->CurrentFileName);
 			if (dump_info->p == NULL)
 				error("%s", pcap_geterr(pd));
 		}
 	}
-
+    
 	/*
 	 * XXX - this won't prevent capture files from getting
 	 * larger than Cflag - the last packet written to the
@@ -1665,13 +1672,13 @@ dump_packet_and_trunc(u_char *user, const struct pcap_pkthdr *h, const u_char *s
 		 * Close the current file and open a new one.
 		 */
 		pcap_dump_close(dump_info->p);
-
+        
 		/*
 		 * Compress the file we just closed, if the user asked for it
 		 */
 		if (zflag != NULL)
 			compress_savefile(dump_info->CurrentFileName);
-
+        
 		Cflag_count++;
 		if (Wflag > 0) {
 			if (Cflag_count >= Wflag)
@@ -1687,13 +1694,13 @@ dump_packet_and_trunc(u_char *user, const struct pcap_pkthdr *h, const u_char *s
 		if (dump_info->p == NULL)
 			error("%s", pcap_geterr(pd));
 	}
-
+    
 	pcap_dump((u_char *)dump_info->p, h, sp);
 #ifdef HAVE_PCAP_DUMP_FLUSH
 	if (Uflag)
 		pcap_dump_flush(dump_info->p);
 #endif
-
+    
 	--infodelay;
 	if (infoprint)
 		info(0);
@@ -1703,136 +1710,229 @@ static void
 dump_packet(u_char *user, const struct pcap_pkthdr *h, const u_char *sp)
 {
 	++packets_captured;
-
+    
 	++infodelay;
-
+    
 	pcap_dump(user, h, sp);
 #ifdef HAVE_PCAP_DUMP_FLUSH
 	if (Uflag)
 		pcap_dump_flush((pcap_dumper_t *)user);
 #endif
-
+    
 	--infodelay;
 	if (infoprint)
 		info(0);
 }
 
+uint64 packet_count;
+uint64 no_ip_count;
+uint64 tcp_count;
+uint64 udp_count;
+uint64 tcp_up_bytes;
+uint64 tcp_down_bytes;
+uint64 udp_up_bytes;
+uint64 udp_down_bytes;
+uint64 http_up_bytes;
+uint64 http_down_bytes;
+uint64 icmp_count;
+uint64 ignore_count1;
+uint64 ignore_count2;
+uint64 flow_count;
+
+struct ip *pip;
+struct tcphdr *ptcp;
+struct udphdr *pudp;
+bool b1, b2;
+bool is_first;
+uint64 start_time_sec;
+uint64 last_time_sec;
+uint64 end_time_sec;
+u_int ip1, ip2;
+u_int ip_clt, ip_svr;
+u_short port_clt, port_svr;
+u_short payload_len;
+double ts;
+double last_prune_time;
+double last_sample_time;
+double ack_delay;
+u_int expected_ack;
+u_int *opt_ts;
+u_short opt_len;
+u_int window_scale;
+
+
+bool isClient(struct in_addr addr) {
+    //for Yihua's trace, server trace: client is 198.*; client trace: client is 10.*; and 32.* for 3G trace
+    return ((addr.s_addr & 0xFF) == 192 ||
+            (addr.s_addr & 0xFF) == 198 ||
+            (addr.s_addr & 0xFF) == 10 ||
+            (addr.s_addr & 0xFF) == 32) ? true : false;
+}
+
+u_short bswap16(u_short i) {
+    return ((i & 0xFF) << 8) + ((i >> 8) & 0xFF);
+}
+
+u_int bswap32(u_int i) {
+    return ((i & 0xFF) << 24) + ((i & 0xFF00) << 8) + ((i >> 8) & 0xFF00) + ((i >> 24) & 0xFF);
+}
+
+//called for each trace file, should not reset persistent variables across different traces here
+int init_global() {
+    is_first = true;
+    start_time_sec = 0;
+    last_time_sec = 0;
+    end_time_sec = 0;
+    
+    packet_count = 0;
+    no_ip_count = 0;
+    tcp_count = 0;
+    udp_count = 0;
+    icmp_count = 0;
+    ignore_count1 = 0;
+    ignore_count2 = 0;
+    flow_count = 0;
+    
+    tcp_up_bytes = 0;
+    tcp_down_bytes = 0;
+    udp_up_bytes = 0;
+    udp_down_bytes = 0;
+    http_up_bytes = 0;
+    http_down_bytes = 0;
+    
+    ack_delay = -1;
+
+    last_prune_time = 0;
+    last_sample_time = 0;
+    
+    SAMPLES = 0;
+    
+    ETHER_HDR_LEN = 16; //linux cooked capture
+}
+
+
 static void
-print_packet(u_char *user, const struct pcap_pkthdr *h, const u_char *sp)
-{
-	struct print_info *print_info;
-	u_int hdrlen;
-
-	++packets_captured;
-
-	++infodelay;
-	ts_print(&h->ts);
-
-	print_info = (struct print_info *)user;
-
-	/*
-	 * Some printers want to check that they're not walking off the
-	 * end of the packet.
-	 * Rather than pass it all the way down, we set this global.
-	 */
-	snapend = sp + h->caplen;
-
-        if(print_info->ndo_type) {
-                hdrlen = (*print_info->p.ndo_printer)(print_info->ndo, h, sp);
-        } else {
-                hdrlen = (*print_info->p.printer)(h, sp);
+print_packet(u_char *c, const struct pcap_pkthdr *header, const u_char *pkt_data) {
+    printf("hjx ");
+    //c is not used
+    packet_count++;
+    //cout << header->len << " " << header->caplen << " time " << (header->ts.tv_sec) << endl;
+    
+    //record time
+    if (is_first) {
+        is_first = false;
+        start_time_sec = header->ts.tv_sec;
+        last_time_sec = start_time_sec;
+        end_time_sec = start_time_sec;
+        TIME_BASE = (double)(header->ts.tv_sec) + (double)header->ts.tv_usec / (double)USEC_PER_SEC;
+        printf("TIME_BASE %.6f\n", TIME_BASE);
+    } else {
+        end_time_sec = header->ts.tv_sec;
+    }
+    
+    ts = ((double)(header->ts.tv_sec) + (double)header->ts.tv_usec / (double)USEC_PER_SEC) - TIME_BASE;
+    
+    if (*((u_short *)(pkt_data + ETHER_HDR_LEN - 2)) == ETHERTYPE_IP) {
+        //all IP
+        pip = (struct ip *)(pkt_data + ETHER_HDR_LEN);
+        b1 = isClient(pip->ip_src);
+        b2 = isClient(pip->ip_dst);
+        if ((b1 && !b2) || (!b1 && b2)) { //uplink or downlink
+            if (b1 && !b2) { // uplink
+                ip_clt = pip->ip_src.s_addr;
+                ip_svr = pip->ip_dst.s_addr;
+            } else { //downlink
+                ip_clt = pip->ip_dst.s_addr;
+                ip_svr = pip->ip_src.s_addr;
+            }
+        } else if (b1 && b2) { //ignore 1, both are client IP
+            ignore_count1++;
+        } else { //ignore 2, none are client IP
+            ignore_count2++;
         }
+        
+        switch (pip->ip_p) {
+            case IPPROTO_TCP:
+                printf("tcp ");
+                //break; //TODO only look at UDP now
+                tcp_count++;
+                ptcp = (struct tcphdr *)((u_char *)pip + BYTES_PER_32BIT_WORD * IP_HL(pip)); //cast of u_char* is necessary
+                payload_len = bswap16(pip->ip_len) - BYTES_PER_32BIT_WORD * (IP_HL(pip) + TH_OFF(ptcp));
                 
-	if (Xflag) {
-		/*
-		 * Print the raw packet data in hex and ASCII.
-		 */
-		if (Xflag > 1) {
-			/*
-			 * Include the link-layer header.
-			 */
-			hex_and_ascii_print("\n\t", sp, h->caplen);
-		} else {
-			/*
-			 * Don't include the link-layer header - and if
-			 * we have nothing past the link-layer header,
-			 * print nothing.
-			 */
-			if (h->caplen > hdrlen)
-				hex_and_ascii_print("\n\t", sp + hdrlen,
-				    h->caplen - hdrlen);
-		}
-	} else if (xflag) {
-		/*
-		 * Print the raw packet data in hex.
-		 */
-		if (xflag > 1) {
-			/*
-			 * Include the link-layer header.
-			 */
-			hex_print("\n\t", sp, h->caplen);
-		} else {
-			/*
-			 * Don't include the link-layer header - and if
-			 * we have nothing past the link-layer header,
-			 * print nothing.
-			 */
-			if (h->caplen > hdrlen)
-				hex_print("\n\t", sp + hdrlen,
-				    h->caplen - hdrlen);
-		}
-	} else if (Aflag) {
-		/*
-		 * Print the raw packet data in ASCII.
-		 */
-		if (Aflag > 1) {
-			/*
-			 * Include the link-layer header.
-			 */
-			ascii_print(sp, h->caplen);
-		} else {
-			/*
-			 * Don't include the link-layer header - and if
-			 * we have nothing past the link-layer header,
-			 * print nothing.
-			 */
-			if (h->caplen > hdrlen)
-				ascii_print(sp + hdrlen, h->caplen - hdrlen);
-		}
-	}
-
-	putchar('\n');
-
-	--infodelay;
-	if (infoprint)
-		info(0);
+                opt_len = BYTES_PER_32BIT_WORD * TH_OFF(ptcp) - 20;
+                opt_ts = (u_int *)((u_char *)ptcp + 20);
+                window_scale = 0;
+                
+                
+                if (b1 && !b2) { // uplink
+                    port_clt = bswap16(ptcp->th_sport);
+                    port_svr = bswap16(ptcp->th_dport);
+                    
+                    tcp_up_bytes += payload_len;
+                    if (port_svr == 80 || port_svr == 8080) {
+                        http_up_bytes += payload_len;
+                    }
+                } else if (!b1 && b2) { //downlink
+                    port_clt = bswap16(ptcp->th_dport);
+                    port_svr = bswap16(ptcp->th_sport);
+                    
+                    tcp_down_bytes += payload_len;
+                    if (port_svr == 80 || port_svr == 8080) {
+                        http_down_bytes += payload_len;
+                    }
+                } else {
+                    break;
+                }
+                
+                break;
+            case IPPROTO_UDP:
+                printf("udp ");
+                udp_count++;
+                pudp = (struct udphdr *)((u_char *)pip + sizeof(struct ip));
+                payload_len = bswap16(pudp->uh_ulen) - UDP_HDR_LEN;
+                break;
+            case IPPROTO_ICMP:
+                printf("icmp ");
+                icmp_count++;
+                break;
+            default:
+                printf("other ");
+                break;
+        }
+        //everything is in IP
+        
+    } else {
+        printf("non-ip ");
+        no_ip_count++;
+    }
+    printf("\n");
 }
 
 #ifdef WIN32
-	/*
-	 * XXX - there should really be libpcap calls to get the version
-	 * number as a string (the string would be generated from #defines
-	 * at run time, so that it's not generated from string constants
-	 * in the library, as, on many UNIX systems, those constants would
-	 * be statically linked into the application executable image, and
-	 * would thus reflect the version of libpcap on the system on
-	 * which the application was *linked*, not the system on which it's
-	 * *running*.
-	 *
-	 * That routine should be documented, unlike the "version[]"
-	 * string, so that UNIX vendors providing their own libpcaps
-	 * don't omit it (as a couple of vendors have...).
-	 *
-	 * Packet.dll should perhaps also export a routine to return the
-	 * version number of the Packet.dll code, to supply the
-	 * "Wpcap_version" information on Windows.
-	 */
-	char WDversion[]="current-cvs.tcpdump.org";
+/*
+ * XXX - there should really be libpcap calls to get the version
+ * number as a string (the string would be generated from #defines
+ * at run time, so that it's not generated from string constants
+ * in the library, as, on many UNIX systems, those constants would
+ * be statically linked into the application executable image, and
+ * would thus reflect the version of libpcap on the system on
+ * which the application was *linked*, not the system on which it's
+ * *running*.
+ *
+ * That routine should be documented, unlike the "version[]"
+ * string, so that UNIX vendors providing their own libpcaps
+ * don't omit it (as a couple of vendors have...).
+ *
+ * Packet.dll should perhaps also export a routine to return the
+ * version number of the Packet.dll code, to supply the
+ * "Wpcap_version" information on Windows.
+ */
+char WDversion[]="current-cvs.tcpdump.org";
 #if !defined(HAVE_GENERATED_VERSION)
-	char version[]="current-cvs.tcpdump.org";
+char version[]="current-cvs.tcpdump.org";
 #endif
-	char pcap_version[]="current-cvs.tcpdump.org";
-	char Wpcap_version[]="3.1";
+char pcap_version[]="current-cvs.tcpdump.org";
+char Wpcap_version[]="3.1";
 #endif
 
 /*
@@ -1865,10 +1965,10 @@ RETSIGTYPE requestinfo(int signo _U_)
  */
 #ifdef USE_WIN32_MM_TIMER
 void CALLBACK verbose_stats_dump (UINT timer_id _U_, UINT msg _U_, DWORD_PTR arg _U_,
-				  DWORD_PTR dw1 _U_, DWORD_PTR dw2 _U_)
+                                  DWORD_PTR dw1 _U_, DWORD_PTR dw2 _U_)
 {
 	struct pcap_stat stat;
-
+    
 	if (infodelay == 0 && pcap_stats(pd, &stat) >= 0)
 		fprintf(stderr, "Got %u\r", packets_captured);
 }
@@ -1876,7 +1976,7 @@ void CALLBACK verbose_stats_dump (UINT timer_id _U_, UINT msg _U_, DWORD_PTR arg
 static void verbose_stats_dump(int sig _U_)
 {
 	struct pcap_stat stat;
-
+    
 	if (infodelay == 0 && pcap_stats(pd, &stat) >= 0)
 		fprintf(stderr, "Got %u\r", packets_captured);
 	alarm(1);
@@ -1894,7 +1994,7 @@ usage(void)
 	static char pcap_version[] = "unknown";
 #endif /* defined(WIN32) || defined(HAVE_PCAP_VERSION) */
 #endif /* HAVE_PCAP_LIB_VERSION */
-
+    
 #ifdef HAVE_PCAP_LIB_VERSION
 #ifdef WIN32
 	(void)fprintf(stderr, "%s version %s, based on tcpdump version %s\n", program_name, WDversion, version);
@@ -1912,17 +2012,17 @@ usage(void)
 #endif /* WIN32 */
 #endif /* HAVE_PCAP_LIB_VERSION */
 	(void)fprintf(stderr,
-"Usage: %s [-aAbd" D_FLAG "efhH" I_FLAG J_FLAG "KlLnNOpqRStu" U_FLAG "vxX]" B_FLAG_USAGE " [ -c count ]\n", program_name);
+                  "Usage: %s [-aAbd" D_FLAG "efhH" I_FLAG J_FLAG "KlLnNOpqRStu" U_FLAG "vxX]" B_FLAG_USAGE " [ -c count ]\n", program_name);
 	(void)fprintf(stderr,
-"\t\t[ -C file_size ] [ -E algo:secret ] [ -F file ] [ -G seconds ]\n");
+                  "\t\t[ -C file_size ] [ -E algo:secret ] [ -F file ] [ -G seconds ]\n");
 	(void)fprintf(stderr,
-"\t\t[ -i interface ]" j_FLAG_USAGE " [ -M secret ]\n");
+                  "\t\t[ -i interface ]" j_FLAG_USAGE " [ -M secret ]\n");
 	(void)fprintf(stderr,
-"\t\t[ -r file ] [ -s snaplen ] [ -T type ] [ -w file ]\n");
+                  "\t\t[ -r file ] [ -s snaplen ] [ -T type ] [ -w file ]\n");
 	(void)fprintf(stderr,
-"\t\t[ -W filecount ] [ -y datalinktype ] [ -z command ]\n");
+                  "\t\t[ -W filecount ] [ -y datalinktype ] [ -z command ]\n");
 	(void)fprintf(stderr,
-"\t\t[ -Z user ] [ expression ]\n");
+                  "\t\t[ -Z user ] [ expression ]\n");
 	exit(1);
 }
 
@@ -1933,7 +2033,7 @@ static void
 ndo_error(netdissect_options *ndo _U_, const char *fmt, ...)
 {
 	va_list ap;
-
+    
 	(void)fprintf(stderr, "%s: ", program_name);
 	va_start(ap, fmt);
 	(void)vfprintf(stderr, fmt, ap);
@@ -1952,7 +2052,7 @@ static void
 ndo_warning(netdissect_options *ndo _U_, const char *fmt, ...)
 {
 	va_list ap;
-
+    
 	(void)fprintf(stderr, "%s: WARNING: ", program_name);
 	va_start(ap, fmt);
 	(void)vfprintf(stderr, fmt, ap);

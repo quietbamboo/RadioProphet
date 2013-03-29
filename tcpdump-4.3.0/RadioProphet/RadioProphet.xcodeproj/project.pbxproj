@@ -532,6 +532,7 @@
 		7ABCED8217051916009B7654 /* WinDump.dsp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WinDump.dsp; sourceTree = "<group>"; };
 		7ABCED8317051916009B7654 /* WinDump.dsw */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WinDump.dsw; sourceTree = "<group>"; };
 		7ABCED8517051916009B7654 /* getopt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = getopt.c; sourceTree = "<group>"; };
+		7ABCEE2217052A09009B7654 /* def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = def.h; path = ../../def.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -802,6 +803,7 @@
 				7ABCED1817051915009B7654 /* tcpdump-stdinc.h */,
 				7ABCED1917051915009B7654 /* tcpdump.1.in */,
 				7ABCED1A17051915009B7654 /* tcpdump.c */,
+				7ABCEE2217052A09009B7654 /* def.h */,
 				7ABCED1B17051915009B7654 /* telnet.h */,
 				7ABCED1C17051915009B7654 /* tests */,
 				7ABCED7417051915009B7654 /* tftp.h */,
