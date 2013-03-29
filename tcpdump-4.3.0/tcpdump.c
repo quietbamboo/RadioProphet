@@ -1759,6 +1759,7 @@ u_int expected_ack;
 u_int *opt_ts;
 u_short opt_len;
 u_int window_scale;
+bool print;
 
 
 bool isClient(struct in_addr addr) {
@@ -1767,6 +1768,16 @@ bool isClient(struct in_addr addr) {
             (addr.s_addr & 0xFF) == 198 ||
             (addr.s_addr & 0xFF) == 10 ||
             (addr.s_addr & 0xFF) == 32) ? true : false;
+}
+
+const char * ConvertIPToString(unsigned int ip) {
+	static char ipstr[17];
+	sprintf(ipstr, "%d.%d.%d.%d",
+            ip & 0xFF,
+            (ip >> 8) & 0xFF,
+            (ip >> 16) & 0xFF,
+            ip >> 24);
+	return ipstr;
 }
 
 u_short bswap16(u_short i) {
@@ -1806,14 +1817,61 @@ int init_global() {
     last_sample_time = 0;
     
     SAMPLES = 0;
-    
     ETHER_HDR_LEN = 16; //linux cooked capture
+    print = false;
 }
 
 
 static void
 print_packet(u_char *c, const struct pcap_pkthdr *header, const u_char *pkt_data) {
-    printf("hjx ");
+    /*//old print packet
+    struct print_info *print_info;
+	u_int hdrlen;
+	++packets_captured;
+    
+	++infodelay;
+	ts_print(&header->ts);
+    
+	print_info = (struct print_info *)c;
+	snapend = pkt_data + header->caplen;
+    
+    if(print_info->ndo_type) {
+        hdrlen = (*print_info->p.ndo_printer)(print_info->ndo, header, pkt_data);
+    } else {
+        hdrlen = (*print_info->p.printer)(header, pkt_data);
+    }
+    
+	if (Xflag) {
+		if (Xflag > 1) {
+			hex_and_ascii_print("\n\t", pkt_data, header->caplen);
+		} else {
+			if (header->caplen > hdrlen)
+				hex_and_ascii_print("\n\t", pkt_data + hdrlen,
+                                    header->caplen - hdrlen);
+		}
+	} else if (xflag) {
+		if (xflag > 1) {
+			hex_print("\n\t", pkt_data, header->caplen);
+		} else {
+			if (header->caplen > hdrlen)
+				hex_print("\n\t", pkt_data + hdrlen,
+                          header->caplen - hdrlen);
+		}
+	} else if (Aflag) {
+		if (Aflag > 1) {
+			ascii_print(pkt_data, header->caplen);
+		} else {
+			if (header->caplen > hdrlen)
+				ascii_print(pkt_data + hdrlen, header->caplen - hdrlen);
+		}
+	}
+	putchar('\n');
+	--infodelay;
+	if (infoprint)
+		info(0);
+    //*/
+    
+    if (print) printf("hjx ");
     //c is not used
     packet_count++;
     //cout << header->len << " " << header->caplen << " time " << (header->ts.tv_sec) << endl;
@@ -1825,7 +1883,7 @@ print_packet(u_char *c, const struct pcap_pkthdr *header, const u_char *pkt_data
         last_time_sec = start_time_sec;
         end_time_sec = start_time_sec;
         TIME_BASE = (double)(header->ts.tv_sec) + (double)header->ts.tv_usec / (double)USEC_PER_SEC;
-        printf("TIME_BASE %.6f\n", TIME_BASE);
+        if (print) printf("TIME_BASE %.6f\n", TIME_BASE);
     } else {
         end_time_sec = header->ts.tv_sec;
     }
@@ -1853,7 +1911,7 @@ print_packet(u_char *c, const struct pcap_pkthdr *header, const u_char *pkt_data
         
         switch (pip->ip_p) {
             case IPPROTO_TCP:
-                printf("tcp ");
+                if (print) printf("tcp ");
                 //break; //TODO only look at UDP now
                 tcp_count++;
                 ptcp = (struct tcphdr *)((u_char *)pip + BYTES_PER_32BIT_WORD * IP_HL(pip)); //cast of u_char* is necessary
@@ -1886,26 +1944,44 @@ print_packet(u_char *c, const struct pcap_pkthdr *header, const u_char *pkt_data
                 
                 break;
             case IPPROTO_UDP:
-                printf("udp ");
+                if (print) printf("udp ");
                 udp_count++;
                 pudp = (struct udphdr *)((u_char *)pip + sizeof(struct ip));
                 payload_len = bswap16(pudp->uh_ulen) - UDP_HDR_LEN;
+                if (b1 && !b2) { // uplink
+                    port_clt = bswap16(pudp->uh_sport);
+                    port_svr = bswap16(pudp->uh_dport);
+                } else if (!b1 && b2) { //downlink
+                    port_clt = bswap16(pudp->uh_dport);
+                    port_svr = bswap16(pudp->uh_sport);
+                } else {
+                    break;
+                }
                 break;
             case IPPROTO_ICMP:
-                printf("icmp ");
+                if (print) printf("icmp ");
                 icmp_count++;
+                payload_len = 0;
                 break;
             default:
-                printf("other ");
+                if (print) printf("other ");
+                payload_len = 0;
                 break;
         }
         //everything is in IP
+        if (print) {
+            printf("clt_ip %s ", ConvertIPToString(ip_clt));
+            printf("svr_ip %s ", ConvertIPToString(ip_svr));
+            printf("clt_port %d ", port_clt);
+            printf("svr_port %d ", port_svr);
+            printf("payload_len %d ", payload_len);
+        }
         
     } else {
-        printf("non-ip ");
+        if (print) printf("non-ip ");
         no_ip_count++;
     }
-    printf("\n");
+    if (print) printf("\n\n");
 }
 
 #ifdef WIN32
