@@ -2,3 +2,7 @@
 *.DS_Store
 *.xcscheme
 *.xcworkspacedata
+
+android_app/bin/
+android_app/gen/
+
