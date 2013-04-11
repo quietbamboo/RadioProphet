@@ -22,9 +22,7 @@
 
 package weka.core;
 
-import java.io.Serializable;
 import java.util.Enumeration;
-import java.util.ArrayList;
 
 /**
  * Interface representing an instance. All values (numeric, date,

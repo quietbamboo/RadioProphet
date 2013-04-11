@@ -55,12 +55,12 @@ import java.util.ArrayList;
  * @see Loader
  */
 public class ArffLoader 
-  extends AbstractFileLoader 
-  implements BatchConverter, IncrementalConverter, URLSourcedLoader {
+extends AbstractFileLoader 
+implements BatchConverter, IncrementalConverter, URLSourcedLoader {
 
   /** for serialization */
   static final long serialVersionUID = 2726929550544048587L;
-  
+
   /** the file extension */
   public static String FILE_EXTENSION = Instances.FILE_EXTENSION;
   public static String FILE_EXTENSION_COMPRESSED = FILE_EXTENSION + ".gz";
@@ -73,7 +73,7 @@ public class ArffLoader
 
   /** The parser for the ARFF file */
   protected transient ArffReader m_ArffReader = null;
-  
+
   /**
    * Reads data from an ARFF file, either in incremental or batch mode. <p/>
    * 
@@ -103,11 +103,11 @@ public class ArffLoader
    * @version $Revision: 7048 $
    */
   public static class ArffReader
-    implements RevisionHandler {
+  implements RevisionHandler {
 
     /** the tokenizer for reading the stream */
     protected StreamTokenizer m_Tokenizer;
-    
+
     /** Buffer of values for sparse instance */
     protected double[] m_ValueBuffer;
 
@@ -119,7 +119,7 @@ public class ArffLoader
 
     /** the number of lines read so far */
     protected int m_Lines;
-    
+
     /**
      * Reads the data completely from the reader. The data can be accessed
      * via the <code>getData()</code> method.
@@ -134,15 +134,15 @@ public class ArffLoader
 
       readHeader(1000);
       initBuffers();
-      
+
       Instance inst;
       while ((inst = readInstance(m_Data)) != null) {
         m_Data.add(inst);
       };
-      
+
       compactify();
     }
-    
+
     /**
      * Reads only the header and reserves the specified space for instances.
      * Further instances can be read via <code>readInstance()</code>.
@@ -156,7 +156,7 @@ public class ArffLoader
      */
     public ArffReader(Reader reader, int capacity) throws IOException {
       if (capacity < 0)
-	throw new IllegalArgumentException("Capacity has to be positive!");
+        throw new IllegalArgumentException("Capacity has to be positive!");
 
       m_Tokenizer = new StreamTokenizer(reader);
       initTokenizer();
@@ -164,7 +164,7 @@ public class ArffLoader
       readHeader(capacity);
       initBuffers();
     }
-    
+
     /**
      * Reads the data without header according to the specified template.
      * The data can be accessed via the <code>getData()</code> method.
@@ -185,7 +185,7 @@ public class ArffLoader
 
       compactify();
     }
-    
+
     /**
      * Initializes the reader without reading the header according to the 
      * specified template. The data must be read via the 
@@ -217,7 +217,7 @@ public class ArffLoader
       m_ValueBuffer = new double[m_Data.numAttributes()];
       m_IndicesBuffer = new int[m_Data.numAttributes()];
     }
-    
+
     /**
      * compactifies the data
      */
@@ -225,7 +225,7 @@ public class ArffLoader
       if (m_Data != null)
         m_Data.compactify();
     }
-    
+
     /**
      * Throws error message with line number and last token read.
      *
@@ -235,8 +235,8 @@ public class ArffLoader
     protected void errorMessage(String msg) throws IOException {
       String str = msg + ", read " + m_Tokenizer.toString();
       if (m_Lines > 0) {
-	int line = Integer.parseInt(str.replaceAll(".* line ", ""));
-	str = str.replaceAll(" line .*", " line " + (m_Lines + line - 1));
+        int line = Integer.parseInt(str.replaceAll(".* line ", ""));
+        str = str.replaceAll(" line .*", " line " + (m_Lines + line - 1));
       }
       throw new IOException(str);
     }
@@ -249,7 +249,7 @@ public class ArffLoader
     public int getLineNo() {
       return m_Lines + m_Tokenizer.lineno();
     }
-    
+
     /**
      * Gets next token, skipping empty lines.
      *
@@ -257,12 +257,12 @@ public class ArffLoader
      */
     protected void getFirstToken() throws IOException {
       while (m_Tokenizer.nextToken() == StreamTokenizer.TT_EOL) {};
-      
+
       if ((m_Tokenizer.ttype == '\'') ||
-  	(m_Tokenizer.ttype == '"')) {
+          (m_Tokenizer.ttype == '"')) {
         m_Tokenizer.ttype = StreamTokenizer.TT_WORD;
       } else if ((m_Tokenizer.ttype == StreamTokenizer.TT_WORD) &&
-  	       (m_Tokenizer.sval.equals("?"))){
+          (m_Tokenizer.sval.equals("?"))){
         m_Tokenizer.ttype = '?';
       }
     }
@@ -280,7 +280,7 @@ public class ArffLoader
         errorMessage("premature end of file");
       }
     }
-    
+
     /**
      * Gets token and checks if its end of line.
      *
@@ -289,7 +289,7 @@ public class ArffLoader
      */
     protected void getLastToken(boolean endOfFileOk) throws IOException {
       if ((m_Tokenizer.nextToken() != StreamTokenizer.TT_EOL) &&
-  	((m_Tokenizer.ttype != StreamTokenizer.TT_EOF) || !endOfFileOk)) {
+          ((m_Tokenizer.ttype != StreamTokenizer.TT_EOF) || !endOfFileOk)) {
         errorMessage("end of line expected");
       }
     }
@@ -340,14 +340,14 @@ public class ArffLoader
       if (m_Tokenizer.ttype == StreamTokenizer.TT_EOF) {
         errorMessage("premature end of file");
       } else if ((m_Tokenizer.ttype == '\'') ||
-  	       (m_Tokenizer.ttype == '"')) {
+          (m_Tokenizer.ttype == '"')) {
         m_Tokenizer.ttype = StreamTokenizer.TT_WORD;
       } else if ((m_Tokenizer.ttype == StreamTokenizer.TT_WORD) &&
-  	       (m_Tokenizer.sval.equals("?"))){
+          (m_Tokenizer.sval.equals("?"))){
         m_Tokenizer.ttype = '?';
       }
     }
-  	
+
     /**
      * Initializes the StreamTokenizer used for reading the ARFF file.
      */
@@ -363,7 +363,7 @@ public class ArffLoader
       m_Tokenizer.ordinaryChar('}');
       m_Tokenizer.eolIsSignificant(true);
     }
-    
+
     /**
      * Reads a single instance using the tokenizer and returns it. 
      *
@@ -376,7 +376,7 @@ public class ArffLoader
     public Instance readInstance(Instances structure) throws IOException {
       return readInstance(structure, true);
     }
-    
+
     /**
      * Reads a single instance using the tokenizer and returns it. 
      *
@@ -391,7 +391,7 @@ public class ArffLoader
     public Instance readInstance(Instances structure, boolean flag) throws IOException {
       return getInstance(structure, flag);
     }
-    
+
     /**
      * Reads a single instance using the tokenizer and returns it. 
      *
@@ -405,7 +405,7 @@ public class ArffLoader
      */ 
     protected Instance getInstance(Instances structure, boolean flag) throws IOException {
       m_Data = structure;
-      
+
       // Check if any attributes have been declared.
       if (m_Data.numAttributes() == 0) {
         errorMessage("no header information available");
@@ -416,7 +416,7 @@ public class ArffLoader
       if (m_Tokenizer.ttype == StreamTokenizer.TT_EOF) {
         return null;
       }
-      
+
       // Parse instance
       if (m_Tokenizer.ttype == '{') {
         return getInstanceSparse(flag);
@@ -436,27 +436,27 @@ public class ArffLoader
      */ 
     protected Instance getInstanceSparse(boolean flag) throws IOException {
       int valIndex, numValues = 0, maxIndex = -1;
-      
+
       // Get values
       do {
         // Get index
         getIndex();
         if (m_Tokenizer.ttype == '}') {
-  	break;
+          break;
         }
-   
+
         // Is index valid?
         try{
-  	m_IndicesBuffer[numValues] = Integer.valueOf(m_Tokenizer.sval).intValue();
+          m_IndicesBuffer[numValues] = Integer.valueOf(m_Tokenizer.sval).intValue();
         } catch (NumberFormatException e) {
-  	errorMessage("index number expected");
+          errorMessage("index number expected");
         }
         if (m_IndicesBuffer[numValues] <= maxIndex) {
-  	errorMessage("indices have to be ordered");
+          errorMessage("indices have to be ordered");
         }
         if ((m_IndicesBuffer[numValues] < 0) || 
-  	  (m_IndicesBuffer[numValues] >= m_Data.numAttributes())) {
-  	errorMessage("index out of bounds");
+            (m_IndicesBuffer[numValues] >= m_Data.numAttributes())) {
+          errorMessage("index out of bounds");
         }
         maxIndex = m_IndicesBuffer[numValues];
 
@@ -468,37 +468,37 @@ public class ArffLoader
           m_ValueBuffer[numValues] = Utils.missingValue();
         } else {
 
-  	// Check if token is valid.
-  	if (m_Tokenizer.ttype != StreamTokenizer.TT_WORD) {
-  	  errorMessage("not a valid value");
-  	}
+          // Check if token is valid.
+          if (m_Tokenizer.ttype != StreamTokenizer.TT_WORD) {
+            errorMessage("not a valid value");
+          }
           switch (m_Data.attribute(m_IndicesBuffer[numValues]).type()) {
-            case Attribute.NOMINAL:
-              // Check if value appears in header.
-              valIndex = 
-                m_Data.attribute(m_IndicesBuffer[numValues]).indexOfValue(m_Tokenizer.sval);
-              if (valIndex == -1) {
-                errorMessage("nominal value not declared in header");
-              }
-              m_ValueBuffer[numValues] = (double)valIndex;
-              break;
-  	case Attribute.NUMERIC:
-  	  // Check if value is really a number.
-  	  try{
-  	    m_ValueBuffer[numValues] = Double.valueOf(m_Tokenizer.sval).
-  	      doubleValue();
-  	  } catch (NumberFormatException e) {
-  	    errorMessage("number expected");
-  	  }
+          case Attribute.NOMINAL:
+            // Check if value appears in header.
+            valIndex = 
+            m_Data.attribute(m_IndicesBuffer[numValues]).indexOfValue(m_Tokenizer.sval);
+            if (valIndex == -1) {
+              errorMessage("nominal value not declared in header");
+            }
+            m_ValueBuffer[numValues] = (double)valIndex;
             break;
-  	case Attribute.STRING:
-  	  m_ValueBuffer[numValues] = 
-  	    m_Data.attribute(m_IndicesBuffer[numValues]).addStringValue(m_Tokenizer.sval);
+          case Attribute.NUMERIC:
+            // Check if value is really a number.
+            try{
+              m_ValueBuffer[numValues] = Double.valueOf(m_Tokenizer.sval).
+                  doubleValue();
+            } catch (NumberFormatException e) {
+              errorMessage("number expected");
+            }
+            break;
+          case Attribute.STRING:
+            m_ValueBuffer[numValues] = 
+            m_Data.attribute(m_IndicesBuffer[numValues]).addStringValue(m_Tokenizer.sval);
             break;
           case Attribute.DATE:
             try {
               m_ValueBuffer[numValues] = 
-                m_Data.attribute(m_IndicesBuffer[numValues]).parseDate(m_Tokenizer.sval);
+                  m_Data.attribute(m_IndicesBuffer[numValues]).parseDate(m_Tokenizer.sval);
             } catch (ParseException e) {
               errorMessage("unparseable date: " + m_Tokenizer.sval);
             }
@@ -515,7 +515,7 @@ public class ArffLoader
             break;
           default:
             errorMessage("unknown attribute type in column " + m_IndicesBuffer[numValues]);
-  	}
+          }
         }
         numValues++;
       } while (true);
@@ -530,7 +530,7 @@ public class ArffLoader
           weight = 1.0;
         }        
       }
-        
+
       // Add instance to dataset
       double[] tempValues = new double[numValues];
       int[] tempIndices = new int[numValues];
@@ -538,7 +538,7 @@ public class ArffLoader
       System.arraycopy(m_IndicesBuffer, 0, tempIndices, 0, numValues);
       Instance inst = new SparseInstance(weight, tempValues, tempIndices, m_Data.numAttributes());
       inst.setDataset(m_Data);
-      
+
       return inst;
     }
 
@@ -554,43 +554,43 @@ public class ArffLoader
     protected Instance getInstanceFull(boolean flag) throws IOException {
       double[] instance = new double[m_Data.numAttributes()];
       int index;
-      
+
       // Get values for all attributes.
       for (int i = 0; i < m_Data.numAttributes(); i++){
         // Get next token
         if (i > 0) {
-  	getNextToken();
+          getNextToken();
         }
-              
+
         // Check if value is missing.
         if  (m_Tokenizer.ttype == '?') {
-  	instance[i] = Utils.missingValue();
+          instance[i] = Utils.missingValue();
         } else {
 
-  	// Check if token is valid.
-  	if (m_Tokenizer.ttype != StreamTokenizer.TT_WORD) {
-  	  errorMessage("not a valid value");
-  	}
+          // Check if token is valid.
+          if (m_Tokenizer.ttype != StreamTokenizer.TT_WORD) {
+            errorMessage("not a valid value");
+          }
           switch (m_Data.attribute(i).type()) {
           case Attribute.NOMINAL:
-  	  // Check if value appears in header.
-  	  index = m_Data.attribute(i).indexOfValue(m_Tokenizer.sval);
-  	  if (index == -1) {
-  	    errorMessage("nominal value not declared in header");
-  	  }
-  	  instance[i] = (double)index;
+            // Check if value appears in header.
+            index = m_Data.attribute(i).indexOfValue(m_Tokenizer.sval);
+            if (index == -1) {
+              errorMessage("nominal value not declared in header");
+            }
+            instance[i] = (double)index;
             break;
-  	case Attribute.NUMERIC:
-  	  // Check if value is really a number.
-  	  try{
-  	    instance[i] = Double.valueOf(m_Tokenizer.sval).
-  	      doubleValue();
-  	  } catch (NumberFormatException e) {
-  	    errorMessage("number expected");
-  	  }
+          case Attribute.NUMERIC:
+            // Check if value is really a number.
+            try{
+              instance[i] = Double.valueOf(m_Tokenizer.sval).
+                  doubleValue();
+            } catch (NumberFormatException e) {
+              errorMessage("number expected");
+            }
             break;
-  	case Attribute.STRING:
-  	  instance[i] = m_Data.attribute(i).addStringValue(m_Tokenizer.sval);
+          case Attribute.STRING:
+            instance[i] = m_Data.attribute(i).addStringValue(m_Tokenizer.sval);
             break;
           case Attribute.DATE:
             try {
@@ -611,10 +611,10 @@ public class ArffLoader
             break;
           default:
             errorMessage("unknown attribute type in column " + i);
-  	}
+          }
         }
       }
-      
+
       double weight = 1.0;
       if (flag) {
         // check for an instance weight
@@ -625,11 +625,11 @@ public class ArffLoader
           weight = 1.0;
         }
       }
-        
+
       // Add instance to dataset
       Instance inst = new DenseInstance(weight, instance);
       inst.setDataset(m_Data);
-      
+
       return inst;
     }
 
@@ -644,7 +644,7 @@ public class ArffLoader
     protected void readHeader(int capacity) throws IOException {
       m_Lines = 0;
       String relationName = "";
-      
+
       // Get name of relation.
       getFirstToken();
       if (m_Tokenizer.ttype == StreamTokenizer.TT_EOF) {
@@ -660,7 +660,7 @@ public class ArffLoader
 
       // Create vectors to hold information temporarily.
       ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-   
+
       // Get attribute declarations.
       getFirstToken();
       if (m_Tokenizer.ttype == StreamTokenizer.TT_EOF) {
@@ -675,12 +675,12 @@ public class ArffLoader
       if (!Instances.ARFF_DATA.equalsIgnoreCase(m_Tokenizer.sval)) {
         errorMessage("keyword " + Instances.ARFF_DATA + " expected");
       }
-      
+
       // Check if any attributes have been declared.
       if (attributes.size() == 0) {
         errorMessage("no attributes declared");
       }
-      
+
       m_Data = new Instances(relationName, attributes, capacity);
     }
 
@@ -700,10 +700,10 @@ public class ArffLoader
       getNextToken();
       attributeName = m_Tokenizer.sval;
       getNextToken();
-      
+
       // Check if attribute is nominal.
       if (m_Tokenizer.ttype == StreamTokenizer.TT_WORD) {
-        
+
         // Attribute is real, integer, or string.
         if (m_Tokenizer.sval.equalsIgnoreCase(Attribute.ARFF_ATTRIBUTE_REAL) ||
             m_Tokenizer.sval.equalsIgnoreCase(Attribute.ARFF_ATTRIBUTE_INTEGER) ||
@@ -712,7 +712,7 @@ public class ArffLoader
           readTillEOL();
         } else if (m_Tokenizer.sval.equalsIgnoreCase(Attribute.ARFF_ATTRIBUTE_STRING)) {
           attributes.add(new Attribute(attributeName, (ArrayList<String>)null,
-                attributes.size()));
+              attributes.size()));
           readTillEOL();
         } else if (m_Tokenizer.sval.equalsIgnoreCase(Attribute.ARFF_ATTRIBUTE_DATE)) {
           String format = null;
@@ -728,15 +728,15 @@ public class ArffLoader
             m_Tokenizer.pushBack();
           }
           attributes.add(new Attribute(attributeName, format, attributes.size()));
-          
+
         } else if (m_Tokenizer.sval.equalsIgnoreCase(Attribute.ARFF_ATTRIBUTE_RELATIONAL)) {
           readTillEOL();
-          
+
           // Read attributes for subrelation
           // First, save current set of attributes
           ArrayList<Attribute> atts = attributes;
           attributes = new ArrayList<Attribute>();
-          
+
           // Now, read attributes until we hit end of declaration of relational value
           getFirstToken();
           if (m_Tokenizer.ttype == StreamTokenizer.TT_EOF) {
@@ -749,29 +749,29 @@ public class ArffLoader
               getNextToken();
               if (!attributeName.equalsIgnoreCase(m_Tokenizer.sval)) {
                 errorMessage("declaration of subrelation " + attributeName + 
-                      " must be terminated by " + "@end " + attributeName);
+                    " must be terminated by " + "@end " + attributeName);
               }
               break;
             } else {
               errorMessage("declaration of subrelation " + attributeName + 
-                    " must be terminated by " + "@end " + attributeName);
+                  " must be terminated by " + "@end " + attributeName);
             }
           } while (true);
-          
+
           // Make relation and restore original set of attributes
           Instances relation = new Instances(attributeName, attributes, 0);
           attributes = atts;
           attributes.add(new Attribute(attributeName, relation, attributes.size()));
         } else {
           errorMessage("no valid attribute type or invalid "+
-                "enumeration");
+              "enumeration");
         }
       } else {
-        
+
         // Attribute is nominal.
         attributeValues = new ArrayList<String>();
         m_Tokenizer.pushBack();
-        
+
         // Get values for nominal attribute.
         if (m_Tokenizer.nextToken() != '{') {
           errorMessage("{ expected at beginning of enumeration");
@@ -784,13 +784,13 @@ public class ArffLoader
           }
         }
         attributes.add(new Attribute(attributeName, attributeValues,
-              attributes.size()));
+            attributes.size()));
       }
       getLastToken(false);
       getFirstToken();
       if (m_Tokenizer.ttype == StreamTokenizer.TT_EOF)
         errorMessage("premature end of file");
-      
+
       return attributes;
     }
 
@@ -801,7 +801,7 @@ public class ArffLoader
      */
     protected void readTillEOL() throws IOException {
       while (m_Tokenizer.nextToken() != StreamTokenizer.TT_EOL) {};
-      
+
       m_Tokenizer.pushBack();
     }
 
@@ -813,7 +813,7 @@ public class ArffLoader
     public Instances getStructure() {
       return new Instances(m_Data, 0);
     }
-    
+
     /**
      * Returns the data that was read
      * 
@@ -822,7 +822,7 @@ public class ArffLoader
     public Instances getData() {
       return m_Data;
     }
-    
+
     /**
      * Returns the revision string.
      * 
@@ -840,7 +840,7 @@ public class ArffLoader
    */
   public String globalInfo() {
     return "Reads a source that is in arff (attribute relation file format) "
-      +"format. ";
+        +"format. ";
   }
 
   /**
@@ -879,7 +879,7 @@ public class ArffLoader
   public void reset() throws IOException {
     m_structure = null;
     setRetrieval(NONE);
-    
+
     if (m_File != null && !(new File(m_File).isDirectory())) {
       setFile(new File(m_File));
     } else if (m_URL != null && !m_URL.equals("http://")) {
@@ -897,7 +897,7 @@ public class ArffLoader
   public void setSource(URL url) throws IOException {
     m_structure = null;
     setRetrieval(NONE);
-    
+
     setSource(url.openStream());
 
     m_URL = url.toString();
@@ -905,7 +905,7 @@ public class ArffLoader
     // reset() work properly
     m_File = null;
   }
-  
+
 
   /**
    * get the File specified as the source
@@ -974,12 +974,12 @@ public class ArffLoader
       if (m_sourceReader == null) {
         throw new IOException("No source has been specified");
       }
-      
+
       try {
-	m_ArffReader = new ArffReader(m_sourceReader, 1);
-	m_structure  = m_ArffReader.getStructure();
+        m_ArffReader = new ArffReader(m_sourceReader, 1);
+        m_structure  = m_ArffReader.getStructure();
       } catch (Exception ex) {
-	throw new IOException("Unable to determine structure as arff (Reason: " + ex.toString() + ").");
+        throw new IOException("Unable to determine structure as arff (Reason: " + ex.toString() + ").");
       }
     }
 
@@ -1011,12 +1011,12 @@ public class ArffLoader
     Instance inst;
     while ((inst = m_ArffReader.readInstance(m_structure)) != null)
       m_structure.add(inst);
-    
+
     Instances readIn = new Instances(m_structure);
 
     // close the stream
     m_sourceReader.close();
-    
+
     return readIn;
   }
 
@@ -1045,7 +1045,7 @@ public class ArffLoader
     Instance current = null;
     if (m_sourceReader != null)
       current = m_ArffReader.readInstance(m_structure);
-    
+
     if ((m_sourceReader != null) && (current == null)) {
       try {
         // close the stream
@@ -1058,7 +1058,7 @@ public class ArffLoader
     }
     return current;
   }
-  
+
   /**
    * Returns the revision string.
    * 

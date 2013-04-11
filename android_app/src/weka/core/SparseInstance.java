@@ -22,9 +22,8 @@
 
 package weka.core;
 
-import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 /**
  * Class for storing an instance as a sparse vector. A sparse instance

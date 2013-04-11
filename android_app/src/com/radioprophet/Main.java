@@ -1,7 +1,7 @@
 package com.radioprophet;
 
-import com.radioprophet.R;
-
+import weka.classifiers.bayes.NaiveBayesUpdateable;
+import weka.core.converters.ArffLoader;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +33,8 @@ public class Main extends Activity {
 			Log.d(logtag,"onClick() called - start button");              
 			Toast.makeText(Main.this, "The Start button was clicked.", Toast.LENGTH_LONG).show();
 			Log.d(logtag,"onClick() ended - start button");
+		 NaiveBayesUpdateable nb = new NaiveBayesUpdateable();
+		 ArffLoader loader = new ArffLoader();
 		}
 	};
 
