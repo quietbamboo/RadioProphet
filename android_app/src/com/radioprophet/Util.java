@@ -5,7 +5,7 @@
 * @Author: Junxian Huang
 *
 ****************************/
-package radioprophet;
+package com.radioprophet;
 
 import android.util.Log;
 

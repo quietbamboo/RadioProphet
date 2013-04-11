@@ -1,4 +1,4 @@
-package radioprophet;
+package com.radioprophet;
 
 import com.radioprophet.R;
 
