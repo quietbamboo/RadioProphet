@@ -20,8 +20,6 @@
 
 package weka.classifiers.functions.neural;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.io.Serializable;
 
 import weka.core.RevisionHandler;
@@ -308,7 +306,7 @@ public abstract class NeuralConnection
    * @param h The height of the display.
    * @return True if the point is on the unit, false otherwise.
    */
-  public boolean onUnit(Graphics g, int x, int y, int w, int h) {
+  /*public boolean onUnit(Graphics g, int x, int y, int w, int h) {
 
     int m = (int)(m_x * w);
     int c = (int)(m_y * h);
@@ -317,7 +315,7 @@ public abstract class NeuralConnection
     }
     return true;
 
-  }
+  }*/
   
   /**
    * Call this function to draw the node.
@@ -325,7 +323,7 @@ public abstract class NeuralConnection
    * @param w The width of the drawing area.
    * @param h The height of the drawing area.
    */
-  public void drawNode(Graphics g, int w, int h) {
+  /*public void drawNode(Graphics g, int w, int h) {
     
     if ((m_type & OUTPUT) == OUTPUT) {
       g.setColor(Color.orange);
@@ -336,7 +334,7 @@ public abstract class NeuralConnection
     g.fillOval((int)(m_x * w) - 9, (int)(m_y * h) - 9, 19, 19);
     g.setColor(Color.gray);
     g.fillOval((int)(m_x * w) - 5, (int)(m_y * h) - 5, 11, 11);
-  }
+  }*/
 
   /**
    * Call this function to draw the node highlighted.
@@ -344,12 +342,12 @@ public abstract class NeuralConnection
    * @param w The width of the drawing area.
    * @param h The height of the drawing area.
    */
-  public void drawHighlight(Graphics g, int w, int h) {
+  /*public void drawHighlight(Graphics g, int w, int h) {
    
     drawNode(g, w, h);
     g.setColor(Color.yellow);
     g.fillOval((int)(m_x * w) - 5, (int)(m_y * h) - 5, 11, 11);
-  }
+  }*/
 
   /** 
    * Call this function to draw the nodes input connections.
@@ -357,7 +355,7 @@ public abstract class NeuralConnection
    * @param w The width of the drawing area.
    * @param h The height of the drawing area.
    */
-  public void drawInputLines(Graphics g, int w, int h) {
+  /*public void drawInputLines(Graphics g, int w, int h) {
 
     g.setColor(Color.black);
     
@@ -368,7 +366,7 @@ public abstract class NeuralConnection
 		 , (int)(m_inputList[noa].getY() * h)
 		 , px, py);
     }
-  }
+  }*/
 
   /**
    * Call this function to draw the nodes output connections.
@@ -376,7 +374,7 @@ public abstract class NeuralConnection
    * @param w The width of the drawing area.
    * @param h The height of the drawing area.
    */
-  public void drawOutputLines(Graphics g, int w, int h) {
+  /*public void drawOutputLines(Graphics g, int w, int h) {
     
     g.setColor(Color.black);
     
@@ -387,7 +385,7 @@ public abstract class NeuralConnection
 		 , (int)(m_outputList[noa].getX() * w)
 		 , (int)(m_outputList[noa].getY() * h));
     }
-  }
+  }*/
 
 
   /**

@@ -23,6 +23,8 @@ package weka;
 
 import java.util.ArrayList;
 
+import radioprophet.Util;
+
 /**
  * Helper class that executes Weka schemes from the command line. Performs
  * Suffix matching on the scheme name entered by the user - e.g.<br><br>
@@ -39,7 +41,7 @@ import java.util.ArrayList;
  *
  */
 public class Run {
-  
+
   public enum SchemeType {
     CLASSIFIER("classifier"),
     CLUSTERER("clusterer"),
@@ -49,24 +51,26 @@ public class Run {
     LOADER("loader"),
     SAVER("saver"),
     COMMANDLINE("general commandline runnable");
-    
+
     private final String m_stringVal;
-    
+
     SchemeType(String name) {
       m_stringVal = name;
     }
-    
+
     public String toString() {
       return m_stringVal;
     }
   }
-  
+
   /**
    * Main method for this class. -help or -h prints usage info.
    * 
    * @param args
    */
   public static void main(String[] args) {
+    Util.logError();
+    /*
     try {
       if (args.length == 0 || args[0].equalsIgnoreCase("-h") ||
           args[0].equalsIgnoreCase("-help")) {
@@ -93,21 +97,21 @@ public class Run {
           }
         }
       }
-      
+
       if (!noLoad) {
         weka.core.WekaPackageManager.loadPackages(false, false);
       }
-      
+
       int schemeIndex = 0;
       if (noLoad && noScan) {
         schemeIndex = 2;
       } else if (noLoad || noScan) {
         schemeIndex = 1;
       }
-      
+
       String schemeToRun = null;
       String[] options = null;
-      
+
       if (schemeIndex >= args.length) {
         System.err.println("No scheme name given.");
         System.exit(1);
@@ -117,8 +121,8 @@ public class Run {
       if (options.length > 0) {
         System.arraycopy(args, schemeIndex + 1, options, 0, options.length);
       }
-      
-           
+
+
       if (!noScan) {     
         weka.core.ClassDiscovery.clearClassCache();
         ArrayList<String> matches = weka.core.ClassDiscovery.find(schemeToRun);
@@ -148,7 +152,7 @@ public class Run {
           System.exit(1);
         } else if (prunedMatches.size() > 1) {
           java.io.BufferedReader br = 
-            new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+              new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
           boolean done = false;
           while (!done) {
             System.out.println("Select a scheme to run, or <return> to exit:");
@@ -213,7 +217,7 @@ public class Run {
       if (scheme instanceof weka.core.CommandlineRunnable) {
         types.add(SchemeType.COMMANDLINE);
       }
-      
+
       SchemeType selectedType = null;
       if (types.size() == 0) {
         System.err.println("" + schemeToRun + " is not runnable!");
@@ -223,7 +227,7 @@ public class Run {
         selectedType = types.get(0);
       } else {
         java.io.BufferedReader br = 
-          new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+            new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
         boolean done = false;
         while (!done) {
           System.out.println("" + schemeToRun + " can be executed as any of the following:");
@@ -250,7 +254,7 @@ public class Run {
           }
         }
       }
-            
+
       if (selectedType == SchemeType.CLASSIFIER) {
         weka.classifiers.AbstractClassifier.runClassifier((weka.classifiers.Classifier)scheme, options);
       } else if (selectedType == SchemeType.CLUSTERER) {
@@ -263,22 +267,23 @@ public class Run {
         weka.filters.Filter.runFilter((weka.filters.Filter)scheme, options);
       } else if (selectedType == SchemeType.LOADER) {
         weka.core.converters.AbstractFileLoader.
-          runFileLoader((weka.core.converters.AbstractFileLoader)scheme, options);
+        runFileLoader((weka.core.converters.AbstractFileLoader)scheme, options);
       } else if (selectedType == SchemeType.SAVER) {
         weka.core.converters.AbstractFileSaver.
-          runFileSaver((weka.core.converters.AbstractFileSaver)scheme, options);
+        runFileSaver((weka.core.converters.AbstractFileSaver)scheme, options);
       } else if (selectedType == SchemeType.COMMANDLINE) {
         ((weka.core.CommandlineRunnable)scheme).run(scheme, options);
       }
-      
+
       System.exit(0);
     } 
     catch (Exception e) {
       if (    ((e.getMessage() != null) && (e.getMessage().indexOf("General options") == -1))
-	   || (e.getMessage() == null) )
-	e.printStackTrace();
+          || (e.getMessage() == null) )
+        e.printStackTrace();
       else
-	System.err.println(e.getMessage());
+        System.err.println(e.getMessage());
     }
+    //*/
   }
 }

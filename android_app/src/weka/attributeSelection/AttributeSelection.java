@@ -21,16 +21,11 @@
 
 package weka.attributeSelection;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.MethodDescriptor;
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Random;
 
+import radioprophet.Util;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Option;
@@ -552,7 +547,9 @@ public class AttributeSelection
    * @exception Exception if there is a problem during selection
    */
   public void SelectAttributes (Instances data) throws Exception {
-    int [] attributeSet;
+	Util.logError();
+    /*
+	int [] attributeSet;
     
     m_transformer = null;
     m_attributeFilter = null;
@@ -784,6 +781,7 @@ public class AttributeSelection
 
     // Save space
     m_trainInstances = new Instances(m_trainInstances, 0);
+    */
   }
 
   /**

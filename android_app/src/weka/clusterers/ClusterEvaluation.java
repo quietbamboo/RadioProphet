@@ -21,17 +21,14 @@
 
 package  weka.clusterers;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.MethodDescriptor;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.Vector;
 
+import radioprophet.Util;
 import weka.core.Drawable;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -44,6 +41,7 @@ import weka.core.Utils;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
+
 
 /**
  * Class for evaluating clustering models.<p/>
@@ -1195,6 +1193,8 @@ public class ClusterEvaluation
    * @throws Exception if there is a problem reflecting on the clusterer
    */
   protected static String getGlobalInfo(Clusterer clusterer) throws Exception {
+    Util.logError();
+    /*
     BeanInfo bi = Introspector.getBeanInfo(clusterer.getClass());
     MethodDescriptor[] methods;
     methods = bi.getMethodDescriptors();
@@ -1213,6 +1213,8 @@ public class ClusterEvaluation
     }
     
     return result;
+    */
+    return null;
   }
 
   /**

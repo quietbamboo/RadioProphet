@@ -25,14 +25,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.Serializable;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import radioprophet.Util;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -778,7 +777,8 @@ public class ClassifierSplitEvaluator implements SplitEvaluator, OptionHandler,
    */
   @Override
   public Object[] getResult(Instances train, Instances test) throws Exception {
-
+    Util.logError();
+    /*
     if (train.classAttribute().type() != Attribute.NOMINAL) {
       throw new Exception("Class attribute is not nominal!");
     }
@@ -1035,6 +1035,8 @@ public class ClassifierSplitEvaluator implements SplitEvaluator, OptionHandler,
       throw new Error("Results didn't fit RESULT_SIZE");
     }
     return result;
+    */
+    return null;
   }
 
   /**

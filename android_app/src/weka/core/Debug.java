@@ -25,8 +25,6 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.FileHandler;
@@ -129,9 +127,6 @@ public class Debug
     /** whether to use the CPU time (by default TRUE) */
     protected boolean m_UseCpuTime;
     
-    /** the thread monitor, if the system can measure the CPU time */
-    protected transient ThreadMXBean m_ThreadMonitor;
-    
     /**
      * automatically starts the clock with FORMAT_SECONDS format and CPU
      * time if available
@@ -183,16 +178,6 @@ public class Debug
 	start();
     }
     
-    /**
-     * initializes the clocking, ensure to get the correct thread ID.
-     */
-    protected void init() {
-      m_ThreadMonitor = null;
-      m_ThreadMonitor = getThreadMonitor();
-
-      // can we measure cpu time?
-      m_CanMeasureCpuTime = m_ThreadMonitor.isThreadCpuTimeSupported();
-    }
     
     /**
      * whether the measurement is based on the msecs returned from the System
@@ -237,23 +222,7 @@ public class Debug
       return m_UseCpuTime;
     }
     
-    /**
-     * Returns a new thread monitor if the current one is null (e.g., due to
-     * serialization) or the currently set one. The thread ID is also updated
-     * if necessary.
-     * 
-     * @return		the thread monitor to use
-     */
-    protected ThreadMXBean getThreadMonitor() {
-      if (m_ThreadMonitor == null) {
-	m_ThreadMonitor = ManagementFactory.getThreadMXBean();
-	if (m_CanMeasureCpuTime && !m_ThreadMonitor.isThreadCpuTimeEnabled())
-	  m_ThreadMonitor.setThreadCpuTimeEnabled(true);
-	m_ThreadID = Thread.currentThread().getId();
-      }
-      
-      return m_ThreadMonitor;
-    }
+   
     
     /**
      * returns the current time in msec
@@ -262,12 +231,7 @@ public class Debug
      */
     protected long getCurrentTime() {
       long	result;
-      
-      if (isCpuTime())
-	result = getThreadMonitor().getThreadUserTime(m_ThreadID) / 1000000;
-      else
-	result = System.currentTimeMillis();
-      
+      result = System.currentTimeMillis();
       return result;
     }
     
@@ -278,7 +242,6 @@ public class Debug
      */
     public void start() {
       // make sure that we get the right thread ID!
-      init();
 
       m_Start   = getCurrentTime();
       m_Stop    = m_Start;
