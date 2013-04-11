@@ -1,31 +1,27 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    AttributeSelection.java
- *    Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 1999 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.attributeSelection;
 
-import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Random;
-
-import radioprophet.Util;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Option;
@@ -36,6 +32,11 @@ import weka.core.Utils;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.Random;
 
 /** 
  * Attribute selection class. Takes the name of a search class and
@@ -76,7 +77,7 @@ import weka.filters.unsupervised.attribute.Remove;
  * ------------------------------------------------------------------------ <p/>
  *
  * @author   Mark Hall (mhall@cs.waikato.ac.nz)
- * @version  $Revision: 8034 $
+ * @version  $Revision: 1.47 $
  */
 public class AttributeSelection 
   implements Serializable, RevisionHandler {
@@ -398,8 +399,8 @@ public class AttributeSelection
       int[] s = Utils.sort(m_rankResults[1]);
       for (int i=0; i<s.length; i++) {
 	if (m_rankResults[1][s[i]] > 0) {
-	  CvString.append(Utils.doubleToString(/*Math.
-					       abs(*/m_rankResults[0][s[i]]/*)*/,
+	  CvString.append(Utils.doubleToString(Math.
+					       abs(m_rankResults[0][s[i]]),
 					       6, 3) 
 			  + " +-" 
 			  + Utils.doubleToString(m_rankResults[2][s[i]], 6, 3) 
@@ -547,9 +548,7 @@ public class AttributeSelection
    * @exception Exception if there is a problem during selection
    */
   public void SelectAttributes (Instances data) throws Exception {
-	Util.logError();
-    /*
-	int [] attributeSet;
+    int [] attributeSet;
     
     m_transformer = null;
     m_attributeFilter = null;
@@ -605,32 +604,32 @@ public class AttributeSelection
     // try and determine if the search method uses an attribute transformer---
     // this is a bit of a hack to make things work properly with RankSearch
     // using PrincipalComponents as its attribute ranker
-     try {
-       BeanInfo bi = Introspector.getBeanInfo(m_searchMethod.getClass());
-       PropertyDescriptor properties[];
-       MethodDescriptor methods[];
-       //       methods = bi.getMethodDescriptors();
-       properties = bi.getPropertyDescriptors();
-       for (int i=0;i<properties.length;i++) {
-	 String name = properties[i].getDisplayName();
-	 Method meth = properties[i].getReadMethod();
-	 Object retType = meth.getReturnType();
-	 if (retType.equals(ASEvaluation.class)) {
-	   Class args [] = { };
-	   ASEvaluation tempEval = (ASEvaluation)(meth.invoke(m_searchMethod,
-							      (Object[])args));
-	   if (tempEval instanceof AttributeTransformer) {
-	     // grab the transformed data header
-	     m_trainInstances = 
-	       ((AttributeTransformer)tempEval).transformedHeader();
-	     m_transformer = (AttributeTransformer)tempEval;
-	   }
-	 }
-       }
-     } catch (IntrospectionException ex) {
-       System.err.println("AttributeSelection: Couldn't "
-			  +"introspect");
-     }
+//     try {
+//       BeanInfo bi = Introspector.getBeanInfo(m_searchMethod.getClass());
+//       PropertyDescriptor properties[];
+//       MethodDescriptor methods[];
+//       //       methods = bi.getMethodDescriptors();
+//       properties = bi.getPropertyDescriptors();
+//       for (int i=0;i<properties.length;i++) {
+//	 String name = properties[i].getDisplayName();
+//	 Method meth = properties[i].getReadMethod();
+//	 Object retType = meth.getReturnType();
+//	 if (retType.equals(ASEvaluation.class)) {
+//	   Class args [] = { };
+//	   ASEvaluation tempEval = (ASEvaluation)(meth.invoke(m_searchMethod,
+//							      (Object[])args));
+//	   if (tempEval instanceof AttributeTransformer) {
+//	     // grab the transformed data header
+//	     m_trainInstances = 
+//	       ((AttributeTransformer)tempEval).transformedHeader();
+//	     m_transformer = (AttributeTransformer)tempEval;
+//	   }
+//	 }
+//       }
+//     } catch (IntrospectionException ex) {
+//       System.err.println("AttributeSelection: Couldn't "
+//			  +"introspect");
+//     }
      
      
      // Do any postprocessing that a attribute selection method might require
@@ -781,7 +780,6 @@ public class AttributeSelection
 
     // Save space
     m_trainInstances = new Instances(m_trainInstances, 0);
-    */
   }
 
   /**
@@ -1095,6 +1093,6 @@ public class AttributeSelection
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 1.47 $");
   }
 }

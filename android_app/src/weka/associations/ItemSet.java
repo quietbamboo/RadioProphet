@@ -1,35 +1,36 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    ItemSet.java
- *    Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 1999 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.associations;
-
-import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Hashtable;
 
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.RevisionHandler;
 import weka.core.RevisionUtils;
+
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * Class for storing a set of items. Item sets are stored in a lexicographic
@@ -40,7 +41,7 @@ import weka.core.RevisionUtils;
  * standard association rule mining.
  *
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
- * @version $Revision: 9469 $
+ * @version $Revision: 6514 $
  */
 public class ItemSet
   implements Serializable, RevisionHandler {
@@ -411,38 +412,6 @@ public class ItemSet
     return text.toString();
   }
 
-   /**
-   * Returns the contents of an item set as a delimited string.
-   *
-   * @param instances contains the relevant header information
-   * @param outerDelim the outer delimiter
-   * @param innerDelim the inner delimiter
-   * @return string describing the item set
-   */
-  public String toString(Instances instances, char outerDelim, char innerDelim) {
-
-    StringBuffer text = new StringBuffer();
-
-    for (int i = 0; i < instances.numAttributes(); i++)
-      if (m_items[i] != -1) {
-        text.append(instances.attribute(i).name())
-          .append('=')
-          .append(instances.attribute(i).value(m_items[i]))
-          .append(innerDelim);
-      }
-
-    int n = text.length();
-    if (n > 0) {
-      text.setCharAt(n - 1, outerDelim);
-    } else {
-      if (outerDelim != ' ' || innerDelim != ' ') {
-        text.append(outerDelim);
-      }
-    }
-    text.append(m_counter);
-    return text.toString();
-  }
-
   /**
    * Updates counter of item set with respect to given transaction.
    *
@@ -545,6 +514,6 @@ public class ItemSet
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9469 $");
+    return RevisionUtils.extract("$Revision: 6514 $");
   }
 }

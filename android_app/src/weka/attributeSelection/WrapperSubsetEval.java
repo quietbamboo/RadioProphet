@@ -1,37 +1,32 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    WrapperSubsetEval.java
- *    Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 1999 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.attributeSelection;
 
-import java.util.BitSet;
-import java.util.Enumeration;
-import java.util.Random;
-import java.util.Vector;
-
-import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
+import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.rules.ZeroR;
 import weka.core.Capabilities;
-import weka.core.Capabilities.Capability;
 import weka.core.Instances;
 import weka.core.Option;
 import weka.core.OptionHandler;
@@ -39,12 +34,18 @@ import weka.core.RevisionUtils;
 import weka.core.SelectedTag;
 import weka.core.Tag;
 import weka.core.TechnicalInformation;
-import weka.core.TechnicalInformation.Field;
-import weka.core.TechnicalInformation.Type;
 import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
+import weka.core.Capabilities.Capability;
+import weka.core.TechnicalInformation.Field;
+import weka.core.TechnicalInformation.Type;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
+
+import java.util.BitSet;
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.Vector;
 
 /** 
  <!-- globalinfo-start -->
@@ -99,7 +100,7 @@ import weka.filters.unsupervised.attribute.Remove;
  *  (standard deviation---expressed as a percentage of the mean).
  *  (default: 0.01 (1%))</pre>
  * 
- * <pre> -E &lt;acc | rmse | mae | f-meas | auc | auprc&gt;
+ * <pre> -E &lt;acc | rmse | mae | f-meas | auc&gt;
  *  Performance evaluation measure to use for selecting attributes.
  *  (Default = accuracy for discrete class and rmse for numeric class)</pre>
  * 
@@ -114,7 +115,7 @@ import weka.filters.unsupervised.attribute.Remove;
  <!-- options-end -->
  *
  * @author Mark Hall (mhall@cs.waikato.ac.nz)
- * @version $Revision: 8034 $
+ * @version $Revision: 5928 $
  */
 public class WrapperSubsetEval
   extends ASEvaluation
@@ -153,7 +154,6 @@ public class WrapperSubsetEval
   public static final int EVAL_MAE = 4;
   public static final int EVAL_FMEASURE = 5;
   public static final int EVAL_AUC = 6;
-  public static final int EVAL_AUPRC = 7;
   
   public static final Tag[] TAGS_EVALUATION = {
     new Tag(EVAL_DEFAULT, "Default: accuracy (discrete class); RMSE (numeric class)"),
@@ -161,8 +161,7 @@ public class WrapperSubsetEval
     new Tag(EVAL_RMSE, "RMSE (of the class probabilities for discrete class)"),
     new Tag(EVAL_MAE, "MAE (of the class probabilities for discrete class)"),
     new Tag(EVAL_FMEASURE, "F-measure (discrete class only)"),
-    new Tag(EVAL_AUC, "AUC (area under the ROC curve - discrete class only)"),
-    new Tag(EVAL_AUPRC, "AUPRC (area under the precision-recall curve - discrete class only)")
+    new Tag(EVAL_AUC, "AUC (area under the ROC curve - discrete class only)")
   };
   
   /** The evaluation measure to use */
@@ -247,7 +246,7 @@ public class WrapperSubsetEval
     newVector.addElement(new Option(
         "\tPerformance evaluation measure to use for selecting attributes.\n" +
         "\t(Default = accuracy for discrete class and rmse for numeric class)",
-        "E", 1, "-E <acc | rmse | mae | f-meas | auc | auprc>"));
+        "E", 1, "-E <acc | rmse | mae | f-meas | auc>"));
 
     if ((m_BaseClassifier != null) && 
 	(m_BaseClassifier instanceof OptionHandler)) {
@@ -291,7 +290,7 @@ public class WrapperSubsetEval
    *  (standard deviation---expressed as a percentage of the mean).
    *  (default: 0.01 (1%))</pre>
    * 
-   * <pre> -E &lt;acc | rmse | mae | f-meas | auc | auprc&gt;
+   * <pre> -E &lt;acc | rmse | mae | f-meas | auc&gt;
    *  Performance evaluation measure to use for selecting attributes.
    *  (Default = accuracy for discrete class and rmse for numeric class)</pre>
    * 
@@ -354,8 +353,6 @@ public class WrapperSubsetEval
         setEvaluationMeasure(new SelectedTag(EVAL_FMEASURE, TAGS_EVALUATION));
       } else if (optionString.equals("auc")) {
         setEvaluationMeasure(new SelectedTag(EVAL_AUC, TAGS_EVALUATION));
-      } else if (optionString.equals("auprc")) {
-        setEvaluationMeasure(new SelectedTag(EVAL_AUPRC, TAGS_EVALUATION));
       } else {
         throw new IllegalArgumentException("Invalid evaluation measure");
       }
@@ -518,7 +515,7 @@ public class WrapperSubsetEval
       classifierOptions = ((OptionHandler)m_BaseClassifier).getOptions();
     }
 
-    String[] options = new String[11 + classifierOptions.length];
+    String[] options = new String[9 + classifierOptions.length];
     int current = 0;
 
     if (getClassifier() != null) {
@@ -532,30 +529,6 @@ public class WrapperSubsetEval
     options[current++] = "" + getThreshold();
     options[current++] = "-R";
     options[current++] = "" + getSeed();
-    
-    options[current++] = "-E";
-    switch (m_evaluationMeasure) {
-    case EVAL_DEFAULT:
-    case EVAL_ACCURACY:
-      options[current++] = "acc";
-      break;
-    case EVAL_RMSE:
-      options[current++] = "rmse";
-      break;
-    case EVAL_MAE:
-      options[current++] = "mae";
-      break;
-    case EVAL_FMEASURE:
-      options[current++] = "f-meas";
-      break;
-    case EVAL_AUC:
-      options[current++] = "auc";
-      break;
-    case EVAL_AUPRC:
-      options[current++] = "auprc";
-      break;
-    }
-    
     options[current++] = "--";
     System.arraycopy(classifierOptions, 0, options, current, 
 		     classifierOptions.length);
@@ -602,7 +575,7 @@ public class WrapperSubsetEval
     result.disable(Capability.NUMERIC_CLASS);
     result.disable(Capability.DATE_CLASS);
     if (m_evaluationMeasure != EVAL_ACCURACY && m_evaluationMeasure != EVAL_FMEASURE &&
-        m_evaluationMeasure != EVAL_AUC && m_evaluationMeasure != EVAL_AUPRC) {
+        m_evaluationMeasure != EVAL_AUC) {
       result.enable(Capability.NUMERIC_CLASS);
       result.enable(Capability.DATE_CLASS);
     }
@@ -698,9 +671,6 @@ public class WrapperSubsetEval
       case EVAL_AUC:
         repError[i] = m_Evaluation.weightedAreaUnderROC();
         break;
-      case EVAL_AUPRC:
-        repError[i] = m_Evaluation.weightedAreaUnderPRC();
-        break;
       }
 
       // check on the standard deviation
@@ -786,9 +756,6 @@ public class WrapperSubsetEval
       case EVAL_AUC:
         text.append("\tSubset evaluation: area under the ROC curve\n");
         break;
-      case EVAL_AUPRC:
-        text.append("\tSubset evalation: area under the precision-recal curve\n");
-        break;
       }
       
       text.append("\tNumber of folds for accuracy estimation: " 
@@ -814,12 +781,6 @@ public class WrapperSubsetEval
     int i;
     double mean = 0;
     double variance = 0;
-    
-    // setting a threshold less than zero allows for "manual" exploration
-    // and prevents multiple xval for each subset
-    if (m_threshold < 0) { 
-      return false; 
-    }
 
     if (entries == 1) {
       return  true;
@@ -854,7 +815,7 @@ public class WrapperSubsetEval
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 5928 $");
   }
 
   /**

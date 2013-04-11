@@ -1,21 +1,22 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    RenameAttribute.java
- *    Copyright (C) 2009-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  *
  */
 
@@ -28,13 +29,13 @@ import java.util.Vector;
 
 import weka.core.Attribute;
 import weka.core.Capabilities;
-import weka.core.Capabilities.Capability;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Option;
 import weka.core.Range;
 import weka.core.RevisionUtils;
 import weka.core.Utils;
+import weka.core.Capabilities.Capability;
 import weka.filters.SimpleStreamFilter;
 
 /**
@@ -53,15 +54,9 @@ import weka.filters.SimpleStreamFilter;
  *  The regular expression that the attribute names must match.
  *  (default: ([\s\S]+))</pre>
  * 
- * <pre> -replace &lt;string&gt;
- *  The string to replace the regular expression of matching attributes with.
- *  Cannot be used in conjunction with '-remove'.
+ * <pre> -replace &lt;regexp&gt;
+ *  The regular expression to replace matching attributes with.
  *  (default: $0)</pre>
- * 
- * <pre> -remove
- *  In case the matching string needs to be removed instead of replaced.
- *  Cannot be used in conjunction with '-replace &lt;string&gt;'.
- *  (default: off)</pre>
  * 
  * <pre> -all
  *  Replaces all occurrences instead of just the first.
@@ -81,7 +76,7 @@ import weka.filters.SimpleStreamFilter;
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 8034 $
+ * @version $Revision: 6108 $
  */
 public class RenameAttribute
   extends SimpleStreamFilter {
@@ -131,16 +126,9 @@ public class RenameAttribute
 	"find", 1, "-find <regexp>"));
 
     result.addElement(new Option(
-	"\tThe string to replace the regular expression of matching attributes with.\n"
-	+ "\tCannot be used in conjunction with '-remove'.\n"
+	"\tThe regular expression to replace matching attributes with.\n"
 	+ "\t(default: $0)",
-	"replace", 1, "-replace <string>"));
-
-    result.addElement(new Option(
-	"\tIn case the matching string needs to be removed instead of replaced.\n"
-	+ "\tCannot be used in conjunction with '-replace <string>'.\n"
-	+ "\t(default: off)",
-	"remove", 0, "-remove"));
+	"replace", 1, "-replace <regexp>"));
 
     result.addElement(new Option(
 	"\tReplaces all occurrences instead of just the first.\n"
@@ -174,15 +162,9 @@ public class RenameAttribute
    *  The regular expression that the attribute names must match.
    *  (default: ([\s\S]+))</pre>
    * 
-   * <pre> -replace &lt;string&gt;
-   *  The string to replace the regular expression of matching attributes with.
-   *  Cannot be used in conjunction with '-remove'.
+   * <pre> -replace &lt;regexp&gt;
+   *  The regular expression to replace matching attributes with.
    *  (default: $0)</pre>
-   * 
-   * <pre> -remove
-   *  In case the matching string needs to be removed instead of replaced.
-   *  Cannot be used in conjunction with '-replace &lt;string&gt;'.
-   *  (default: off)</pre>
    * 
    * <pre> -all
    *  Replaces all occurrences instead of just the first.
@@ -213,16 +195,11 @@ public class RenameAttribute
     else
       setFind("([\\s\\S]+)");
     
-    if (Utils.getFlag("remove", options)) {
-      setReplace("");
-    }
-    else {
-      tmpStr = Utils.getOption("replace", options);
-      if (tmpStr.length() > 0)
-	setReplace(tmpStr);
-      else
-	setReplace("$0");
-    }
+    tmpStr = Utils.getOption("replace", options);
+    if (tmpStr.length() != 0)
+      setReplace(tmpStr);
+    else
+      setReplace("$0");
 
     setReplaceAll(Utils.getFlag("all", options));
     
@@ -251,13 +228,8 @@ public class RenameAttribute
     result.add("-find");
     result.add(getFind());
     
-    if (getReplace().length() > 0) {
-      result.add("-replace");
-      result.add(getReplace());
-    }
-    else {
-      result.add("-remove");
-    }
+    result.add("-replace");
+    result.add(getReplace());
     
     if (getReplaceAll())
       result.add("-all");
@@ -503,7 +475,7 @@ public class RenameAttribute
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 6108 $");
   }
 
   /**

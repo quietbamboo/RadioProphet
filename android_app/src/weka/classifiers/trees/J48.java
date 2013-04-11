@@ -1,29 +1,28 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    J48.java
- *    Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 1999 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.classifiers.trees;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
+import weka.classifiers.Classifier;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Sourcable;
 import weka.classifiers.trees.j48.BinC45ModelSelection;
@@ -40,15 +39,17 @@ import weka.core.Instances;
 import weka.core.Matchable;
 import weka.core.Option;
 import weka.core.OptionHandler;
-import weka.core.PartitionGenerator;
 import weka.core.RevisionUtils;
 import weka.core.Summarizable;
 import weka.core.TechnicalInformation;
-import weka.core.TechnicalInformation.Field;
-import weka.core.TechnicalInformation.Type;
 import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
 import weka.core.WeightedInstancesHandler;
+import weka.core.TechnicalInformation.Field;
+import weka.core.TechnicalInformation.Type;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  <!-- globalinfo-start -->
@@ -118,13 +119,13 @@ import weka.core.WeightedInstancesHandler;
  <!-- options-end -->
  *
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
- * @version $Revision: 9117 $
+ * @version $Revision: 6088 $
  */
 public class J48 
   extends AbstractClassifier 
   implements OptionHandler, Drawable, Matchable, Sourcable, 
              WeightedInstancesHandler, Summarizable, AdditionalMeasureProducer, 
-             TechnicalInformationHandler, PartitionGenerator {
+             TechnicalInformationHandler {
 
   /** for serialization */
   static final long serialVersionUID = -217733168393644444L;
@@ -1026,31 +1027,7 @@ public class J48
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9117 $");
-  }
-
-  /**
-   * Builds the classifier to generate a partition.
-   */
-  public void generatePartition(Instances data) throws Exception {
-    
-    buildClassifier(data);
-  }
-	
-  /**
-   * Computes an array that indicates node membership.
-   */
-  public double[] getMembershipValues(Instance inst) throws Exception {
-		
-    return m_root.getMembershipValues(inst);
-  }
-  
-  /**
-   * Returns the number of elements in the partition.
-   */
-  public int numElements() throws Exception {
-    
-    return m_root.numNodes();
+    return RevisionUtils.extract("$Revision: 6088 $");
   }
  
   /**

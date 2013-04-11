@@ -1,21 +1,22 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    CheckGOE.java
- *    Copyright (C) 2007-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *
  */
 
@@ -26,8 +27,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
-
-import radioprophet.Util;
 
 /**
  * Simple command line checking of classes that are editable in the GOE.<p/>
@@ -58,27 +57,27 @@ import radioprophet.Util;
  <!-- options-end -->
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 8034 $
+ * @version $Revision: 5953 $
  */
 public class CheckGOE
-extends Check {
+  extends Check {
 
   /** the object to test */
   protected Object m_Object = new weka.classifiers.rules.ZeroR();
-
+  
   /** whether the tests were successful */
   protected boolean m_Success;
-
+  
   /** properties that are skipped in the checkToolTips method 
    * @see #checkToolTips() */
   protected HashSet<String> m_IgnoredProperties = new HashSet<String>();
-
+  
   /**
    * default constructor
    */
   public CheckGOE() {
     super();
-
+    
     // set default options
     try {
       setOptions(new String[0]);
@@ -87,7 +86,7 @@ extends Check {
       e.printStackTrace();
     }
   }
-
+  
   /**
    * Returns an enumeration describing the available options.
    *
@@ -95,25 +94,25 @@ extends Check {
    */
   public Enumeration listOptions() {
     Vector<Option> result = new Vector<Option>();
-
+    
     Enumeration en = super.listOptions();
     while (en.hasMoreElements())
       result.addElement((Option)en.nextElement());
-
+    
     result.addElement(new Option(
         "\tSkipped properties.\n"
-            + "\t(default: capabilities,options)",
-            "ignored", 1, "-ignored <comma-separated list of properties>"));
-
+	+ "\t(default: capabilities,options)",
+        "ignored", 1, "-ignored <comma-separated list of properties>"));
+    
     result.addElement(new Option(
         "\tFull name of the class analysed.\n"
-            +"\teg: weka.classifiers.rules.ZeroR\n"
-            + "\t(default weka.classifiers.rules.ZeroR)",
-            "W", 1, "-W"));
-
+        +"\teg: weka.classifiers.rules.ZeroR\n"
+        + "\t(default weka.classifiers.rules.ZeroR)",
+        "W", 1, "-W"));
+    
     return result.elements();
   }
-
+  
   /**
    * Parses a given list of options. <p/>
    *
@@ -142,20 +141,20 @@ extends Check {
    */
   public void setOptions(String[] options) throws Exception {
     String      tmpStr;
-
+    
     super.setOptions(options);
-
+    
     tmpStr = Utils.getOption('W', options);
     if (tmpStr.length() == 0)
       tmpStr = weka.classifiers.rules.ZeroR.class.getName();
     setObject(Utils.forName(Object.class, tmpStr, null));
-
+    
     tmpStr = Utils.getOption("ignored", options);
     if (tmpStr.length() == 0)
       tmpStr = "capabilities,options";
     setIgnoredProperties(tmpStr);
   }
-
+  
   /**
    * Gets the current settings of the object.
    *
@@ -165,24 +164,24 @@ extends Check {
     Vector<String>        result;
     String[]      options;
     int           i;
-
+    
     result = new Vector<String>();
-
+    
     options = super.getOptions();
     for (i = 0; i < options.length; i++)
       result.add(options[i]);
 
     result.add("-ignored");
     result.add(getIgnoredProperties());
-
+    
     if (getObject() != null) {
       result.add("-W");
       result.add(getObject().getClass().getName());
     }
-
+    
     return (String[]) result.toArray(new String[result.size()]);
   }
-
+  
   /**
    * Set the object to work on.. 
    *
@@ -191,7 +190,7 @@ extends Check {
   public void setObject(Object value) {
     m_Object = value;
   }
-
+  
   /**
    * Get the object used in the tests.
    *
@@ -210,7 +209,7 @@ extends Check {
   public void setIgnoredProperties(String value) {
     String[] 	props;
     int		i;
-
+    
     m_IgnoredProperties.clear();
     props = value.split(",");
     for (i = 0; i < props.length; i++)
@@ -229,26 +228,26 @@ extends Check {
     Vector<String>	list;
     Iterator		iter;
     int			i;
-
+    
     list = new Vector<String>();
     iter = m_IgnoredProperties.iterator();
     while (iter.hasNext())
       list.add((String) iter.next());
-
+    
     // sort
     if (list.size() > 1)
       Collections.sort(list);
-
+    
     result = "";
     for (i = 0; i < list.size(); i++) {
       if (i > 0)
-        result += ",";
+	result += ",";
       result += list.get(i);
     }
-
+     
     return result;
   }
-
+  
   /**
    * returns the success of the tests
    * 
@@ -266,12 +265,12 @@ extends Check {
   public boolean checkGlobalInfo() {
     boolean 	result;
     Class<?>	cls;
-
+    
     print("Global info...");
-
+    
     result = true;
     cls    = getObject().getClass();
-
+    
     // test for globalInfo method
     try {
       cls.getMethod("globalInfo", (Class[]) null);
@@ -295,67 +294,63 @@ extends Check {
    * @return 		true if the test was passed
    */
   public boolean checkToolTips() {
-    Util.logError();
-    /*
-    boolean 			result;
-    Class<?>			cls;
-    BeanInfo			info;
-    PropertyDescriptor[]	desc;
-    int				i;
-    Vector<String>		missing;
-    String			suffix;
-
-    print("Tool tips...");
-
-    result = true;
-    suffix = "TipText";
-    cls    = getObject().getClass();
-
-    // get properties
-    try {
-      info = Introspector.getBeanInfo(cls, Object.class);
-      desc = info.getPropertyDescriptors();
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-      desc = null;
-    }
-
-    // test for TipText methods
-    if (desc != null) {
-      missing = new Vector<String>();
-
-      for (i = 0; i < desc.length; i++) {
-        // skip property?
-        if (m_IgnoredProperties.contains(desc[i].getName()))
-          continue;
-        if ((desc[i].getReadMethod() == null) || (desc[i].getWriteMethod() == null))
-          continue;
-
-        try {
-          cls.getMethod(desc[i].getName() + suffix, (Class[]) null);
-        }
-        catch (Exception e) {
-          result = false;
-          missing.add(desc[i].getName() + suffix);
-        }
-      }
-
-      if (result)
-        println("yes");
-      else
-        println("no (missing: " + missing + ")");
-
-    }
-    else {
-      println("maybe");
-    }
-
+    boolean 			result = false;
+//    Class<?>			cls;
+////    BeanInfo			info;
+////    PropertyDescriptor[]	desc;
+//    int				i;
+//    Vector<String>		missing;
+//    String			suffix;
+//    
+//    print("Tool tips...");
+//    
+//    result = true;
+//    suffix = "TipText";
+//    cls    = getObject().getClass();
+//    
+//    // get properties
+//    try {
+//      info = Introspector.getBeanInfo(cls, Object.class);
+//      desc = info.getPropertyDescriptors();
+//    }
+//    catch (Exception e) {
+//      e.printStackTrace();
+//      desc = null;
+//    }
+//
+//    // test for TipText methods
+//    if (desc != null) {
+//      missing = new Vector<String>();
+//      
+//      for (i = 0; i < desc.length; i++) {
+//	// skip property?
+//	if (m_IgnoredProperties.contains(desc[i].getName()))
+//	  continue;
+//	if ((desc[i].getReadMethod() == null) || (desc[i].getWriteMethod() == null))
+//	  continue;
+//	  
+//	try {
+//	  cls.getMethod(desc[i].getName() + suffix, (Class[]) null);
+//	}
+//	catch (Exception e) {
+//	  result = false;
+//	  missing.add(desc[i].getName() + suffix);
+//	}
+//      }
+//      
+//      if (result)
+//	println("yes");
+//      else
+//	println("no (missing: " + missing + ")");
+//
+//    }
+//    else {
+//      println("maybe");
+//    }
+//    
     return result;
-    */
-    return true;
   }
-
+  
   /**
    * Runs some diagnostic tests on the object. Output is
    * printed to System.out (if not silent).
@@ -370,16 +365,16 @@ extends Check {
     if (m_Success)
       m_Success = checkToolTips();
   }
-
+  
   /**
    * Returns the revision string.
    * 
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 5953 $");
   }
-
+  
   /** 
    * Main method for using the CheckGOE.
    *

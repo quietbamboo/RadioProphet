@@ -1,40 +1,34 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    REPTree.java
- *    Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 1999 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.classifiers.trees;
 
-import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Random;
-import java.util.Vector;
-import java.util.Queue;
-import java.util.LinkedList;
-
+import weka.classifiers.Classifier;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Sourcable;
 import weka.classifiers.rules.ZeroR;
 import weka.core.AdditionalMeasureProducer;
 import weka.core.Attribute;
 import weka.core.Capabilities;
-import weka.core.Capabilities.Capability;
 import weka.core.ContingencyTables;
 import weka.core.Drawable;
 import weka.core.Instance;
@@ -45,8 +39,12 @@ import weka.core.RevisionHandler;
 import weka.core.RevisionUtils;
 import weka.core.Utils;
 import weka.core.WeightedInstancesHandler;
-import weka.core.PartitionGenerator;
-import weka.core.Randomizable;
+import weka.core.Capabilities.Capability;
+
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.Vector;
 
 /**
  <!-- globalinfo-start -->
@@ -79,12 +77,12 @@ import weka.core.Randomizable;
  <!-- options-end -->
  *
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
- * @version $Revision: 9378 $ 
+ * @version $Revision: 6954 $ 
  */
 public class REPTree 
   extends AbstractClassifier 
   implements OptionHandler, WeightedInstancesHandler, Drawable, 
-	     AdditionalMeasureProducer, Sourcable, PartitionGenerator, Randomizable {
+	     AdditionalMeasureProducer, Sourcable {
 
   /** for serialization */
   static final long serialVersionUID = -9216785998198681299L;
@@ -197,10 +195,7 @@ public class REPTree
       if ((m_Attribute == -1) || (returnedDist == null)) {
 	
 	// Node is a leaf or successor is empty
-        if (m_ClassProbs == null) {
-          return m_ClassProbs;
-        }
-	return (double[])m_ClassProbs.clone();
+	return m_ClassProbs;
       } else {
 	return returnedDist;
       }
@@ -641,7 +636,7 @@ public class REPTree
 	  break;
 	}
       }
-      
+
       // Any useful split found?
       if (Utils.gr(vals[m_Attribute], 0) && (count > 1)) {
 
@@ -903,12 +898,6 @@ public class REPTree
 	    if (currVal > bestVal) {
 	      bestVal = currVal;
 	      splitPoint = (inst.value(att) + currSplit) / 2.0;
-
-              // Check for numeric precision problems
-              if (splitPoint <= currSplit) {
-                splitPoint = inst.value(att);
-              }
-
 	      for (int j = 0; j < currDist.length; j++) {
 		System.arraycopy(currDist[j], 0, dist[j], 0, 
 				 dist[j].length);
@@ -1051,12 +1040,6 @@ public class REPTree
 	    if (currVal < bestVal) {
 	      bestVal = currVal;
 	      splitPoint = (inst.value(att) + currSplit) / 2.0;
-
-              // Check for numeric precision problems
-              if (splitPoint <= currSplit) {
-                splitPoint = inst.value(att);
-              }
-
 	      for (int j = 0; j < 2; j++) {
 		sums[j] = currSums[j];
 		sumSquared[j] = currSumSquared[j];
@@ -1360,7 +1343,7 @@ public class REPTree
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 9378 $");
+      return RevisionUtils.extract("$Revision: 6954 $");
     }
   }
 
@@ -2068,80 +2051,6 @@ public class REPTree
       "\nREPTree\n============\n" + m_Tree.toString(0, null) + "\n" +
       "\nSize of the tree : " + numNodes();
   }
-
-  /**
-   * Builds the classifier to generate a partition.
-   */
-  public void generatePartition(Instances data) throws Exception {
-    
-    buildClassifier(data);
-  }
-	
-  /**
-   * Computes array that indicates node membership. Array locations
-   * are allocated based on breadth-first exploration of the tree.
-   */
-  public double[] getMembershipValues(Instance instance) throws Exception {
-		
-    if (m_zeroR != null) {
-      double[] m = new double[1];
-      m[0] = instance.weight();
-      return m;
-    } else {
-
-      // Set up array for membership values
-      double[] a = new double[numElements()];
-      
-      // Initialize queues
-      Queue<Double> queueOfWeights =  new LinkedList<Double>();
-      Queue<Tree> queueOfNodes = new LinkedList<Tree>();
-      queueOfWeights.add(instance.weight());
-      queueOfNodes.add(m_Tree);
-      int index = 0;
-      
-      // While the queue is not empty
-      while (!queueOfNodes.isEmpty()) {
-        
-        a[index++] = queueOfWeights.poll();
-        Tree node = queueOfNodes.poll();
-        
-        // Is node a leaf?
-        if (node.m_Attribute <= -1) {
-          continue;
-        }
-        
-        // Compute weight distribution
-        double[] weights = new double[node.m_Successors.length];
-        if (instance.isMissing(node.m_Attribute)) {
-          System.arraycopy(node.m_Prop, 0, weights, 0, node.m_Prop.length);
-        } else if (node.m_Info.attribute(node.m_Attribute).isNominal()) {
-	  weights[(int)instance.value(node.m_Attribute)] = 1.0;
-	} else {
-	  if (instance.value(node.m_Attribute) < node.m_SplitPoint) {
-            weights[0] = 1.0;
-	  } else {
-            weights[1] = 1.0;
-	  }
-	}
-        for (int i = 0; i < node.m_Successors.length; i++) {
-          queueOfNodes.add(node.m_Successors[i]);
-          queueOfWeights.add(a[index - 1] * weights[i]);
-        }
-      }
-      return a;
-    }
-  }
-  
-  /**
-   * Returns the number of elements in the partition.
-   */
-  public int numElements() throws Exception {
-    
-    if (m_zeroR != null) {
-      return 1;
-    }
-    return numNodes();
-  }
   
   /**
    * Returns the revision string.
@@ -2149,7 +2058,7 @@ public class REPTree
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9378 $");
+    return RevisionUtils.extract("$Revision: 6954 $");
   }
 
   /**

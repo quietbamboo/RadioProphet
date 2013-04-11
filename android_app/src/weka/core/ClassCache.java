@@ -1,23 +1,23 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /**
  * ClassCache.java
- * Copyright (C) 2010-2012 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2010 University of Waikato, Hamilton, New Zealand
  */
-
 package weka.core;
 
 import java.io.File;
@@ -38,7 +38,7 @@ import java.util.jar.JarFile;
  * A singleton that stores all classes on the classpath.
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 8034 $
+ * @version $Revision: 6882 $
  */
 public class ClassCache
   implements RevisionHandler {
@@ -47,7 +47,7 @@ public class ClassCache
    * For filtering classes.
    *
    * @author  fracpete (fracpete at waikato dot ac dot nz)
-   * @version $Revision: 8034 $
+   * @version $Revision: 6882 $
    */
   public static class ClassFileFilter
     implements FileFilter {
@@ -67,7 +67,7 @@ public class ClassCache
    * For filtering classes.
    *
    * @author  fracpete (fracpete at waikato dot ac dot nz)
-   * @version $Revision: 8034 $
+   * @version $Revision: 6882 $
    */
   public static class DirectoryFilter
     implements FileFilter {
@@ -233,11 +233,6 @@ public class ClassCache
     if (VERBOSE)
       System.out.println("Analyzing jar: " + file);
 
-    if (!file.exists()) {
-      System.out.println("Jar does not exist: " + file);
-      return;
-    }
-
     try {
       jar = new JarFile(file);
       enm = jar.entries();
@@ -355,7 +350,7 @@ public class ClassCache
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 6882 $");
   }
 
   /**

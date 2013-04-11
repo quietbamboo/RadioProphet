@@ -1,24 +1,26 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    SystemInfo.java
- *    Copyright (C) 2005-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 2005 University of Waikato, Hamilton, New Zealand
  *
  */
 package weka.core;
+
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -26,14 +28,12 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
-import weka.gui.LookAndFeel;
-
 /**
  * This class prints some information about the system setup, like Java
  * version, JVM settings etc. Useful for Bug-Reports.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 8034 $
+ * @version $Revision: 5953 $
  */
 public class SystemInfo
   implements RevisionHandler {
@@ -59,6 +59,7 @@ public class SystemInfo
     String[]            laf;
     String              tmpStr;
     int                 i;
+    Memory              mem;
     
     m_Info.clear();
 
@@ -73,17 +74,17 @@ public class SystemInfo
     // additional WEKA info
     m_Info.put("weka.version", Version.VERSION);
 
-    // look and feel info
-    laf    = LookAndFeel.getInstalledLookAndFeels();
-    tmpStr = "";
-    for (i = 0; i < laf.length; i++) {
-      if (i > 0)
-        tmpStr += ",";
-      tmpStr += laf[i];
-    }
-    m_Info.put("ui.installedLookAndFeels", tmpStr);
-    m_Info.put("ui.currentLookAndFeel", LookAndFeel.getSystemLookAndFeel());
 
+    // memory info
+    mem = new Memory();
+    m_Info.put(
+        "memory.initial", 
+        "" + Utils.doubleToString(Memory.toMegaByte(mem.getInitial()), 1) + "MB" 
+        + " (" + mem.getInitial() + ")");
+    m_Info.put(
+        "memory.max", 
+        "" + Utils.doubleToString(Memory.toMegaByte(mem.getMax()), 1) + "MB"
+        + " (" + mem.getMax() + ")");
   }
 
   /**
@@ -132,7 +133,7 @@ public class SystemInfo
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 5953 $");
   }
 
   /**

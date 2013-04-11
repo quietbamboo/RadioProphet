@@ -6,3 +6,6 @@
 android_app/bin/
 android_app/gen/
 
+android_app/src/weka/.svn/
+android_app/src/weka/associations/.svn/
+

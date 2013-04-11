@@ -1,38 +1,39 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    C45PruneableClassifierTree.java
- *    Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 1999 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.classifiers.trees.j48;
 
 import weka.core.Capabilities;
-import weka.core.Capabilities.Capability;
 import weka.core.Instances;
 import weka.core.RevisionUtils;
 import weka.core.Utils;
+import weka.core.Capabilities.Capability;
 
 /**
  * Class for handling a tree structure that can
  * be pruned using C4.5 procedures.
  *
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
- * @version $Revision: 8984 $
+ * @version $Revision: 6073 $
  */
 
 public class C45PruneableClassifierTree 
@@ -123,7 +124,7 @@ public class C45PruneableClassifierTree
     data = new Instances(data);
     data.deleteWithMissingClass();
     
-   buildTree(data, m_subtreeRaising || !m_cleanup);
+   buildTree(data, m_subtreeRaising);
    if (m_collapseTheTree) {
      collapse();
    }
@@ -235,7 +236,7 @@ public class C45PruneableClassifierTree
     C45PruneableClassifierTree newTree = 
       new C45PruneableClassifierTree(m_toSelectModel, m_pruneTheTree, m_CF,
 				     m_subtreeRaising, m_cleanup, m_collapseTheTree);
-    newTree.buildTree((Instances)data, m_subtreeRaising || !m_cleanup);
+    newTree.buildTree((Instances)data, m_subtreeRaising);
 
     return newTree;
   }
@@ -374,6 +375,6 @@ public class C45PruneableClassifierTree
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8984 $");
+    return RevisionUtils.extract("$Revision: 6073 $");
   }
 }

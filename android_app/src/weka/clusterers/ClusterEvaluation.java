@@ -1,34 +1,27 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    ClusterEvaluation.java
- *    Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 1999 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package  weka.clusterers;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Random;
-import java.util.Vector;
-
-import radioprophet.Util;
 import weka.core.Drawable;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -42,6 +35,13 @@ import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.Vector;
 
 /**
  * Class for evaluating clustering models.<p/>
@@ -84,7 +84,7 @@ import weka.filters.unsupervised.attribute.Remove;
  * <p/>
  *
  * @author   Mark Hall (mhall@cs.waikato.ac.nz)
- * @version  $Revision: 8034 $
+ * @version  $Revision: 6021 $
  * @see	     weka.core.Drawable
  */
 public class ClusterEvaluation 
@@ -188,22 +188,6 @@ public class ClusterEvaluation
   public void evaluateClusterer(Instances test) throws Exception {
     evaluateClusterer(test, "");
   }
-  
-  /**
-   * Evaluate the clusterer on a set of instances. Calculates clustering
-   * statistics and stores cluster assigments for the instances in
-   * m_clusterAssignments
-   * 
-   * @param test the set of instances to cluster
-   * @param testFileName the name of the test file for incremental testing, 
-   * if "" or null then not used
-   * 
-   * @throws Exception if something goes wrong
-   */
-  public void evaluateClusterer(Instances test, String testFileName) 
-    throws Exception {
-    evaluateClusterer(test, testFileName, true);
-  }
 
   /**
    * Evaluate the clusterer on a set of instances. Calculates clustering
@@ -213,13 +197,9 @@ public class ClusterEvaluation
    * @param test the set of instances to cluster
    * @param testFileName the name of the test file for incremental testing, 
    * if "" or null then not used
-   * @param outputModel true if the clustering model is to be output as well
-   * as the stats
-   * 
    * @throws Exception if something goes wrong
    */
-  public void evaluateClusterer(Instances test, String testFileName, 
-      boolean outputModel) throws Exception {
+  public void evaluateClusterer(Instances test, String testFileName) throws Exception {
     int i = 0;
     int cnum;
     double loglk = 0.0;
@@ -297,9 +277,7 @@ public class ClusterEvaluation
     }
     int numInstFieldWidth = (int)((Math.log(clusterAssignments.size())/Math.log(10))+1);
     
-    if (outputModel) {
-      m_clusteringResults.append(m_Clusterer.toString());
-    }
+    m_clusteringResults.append(m_Clusterer.toString());
     m_clusteringResults.append("Clustered Instances\n\n");
     int clustFieldWidth = (int)((Math.log(cc)/Math.log(10))+1);
     for (i = 0; i < cc; i++) {
@@ -1193,28 +1171,24 @@ public class ClusterEvaluation
    * @throws Exception if there is a problem reflecting on the clusterer
    */
   protected static String getGlobalInfo(Clusterer clusterer) throws Exception {
-    Util.logError();
-    /*
-    BeanInfo bi = Introspector.getBeanInfo(clusterer.getClass());
-    MethodDescriptor[] methods;
-    methods = bi.getMethodDescriptors();
-    Object[] args = {};
+//    BeanInfo bi = Introspector.getBeanInfo(clusterer.getClass());
+//    MethodDescriptor[] methods;
+//    methods = bi.getMethodDescriptors();
+//    Object[] args = {};
     String result = "\nSynopsis for " + clusterer.getClass().getName()
       + ":\n\n";
     
-    for (int i = 0; i < methods.length; i++) {
-      String name = methods[i].getDisplayName();
-      Method meth = methods[i].getMethod();
-      if (name.equals("globalInfo")) {
-        String globalInfo = (String)(meth.invoke(clusterer, args));
-        result += globalInfo;
-        break;
-      }
-    }
+//    for (int i = 0; i < methods.length; i++) {
+//      String name = methods[i].getDisplayName();
+//      Method meth = methods[i].getMethod();
+//      if (name.equals("globalInfo")) {
+//        String globalInfo = (String)(meth.invoke(clusterer, args));
+//        result += globalInfo;
+//        break;
+//      }
+//    }
     
     return result;
-    */
-    return null;
   }
 
   /**
@@ -1267,7 +1241,7 @@ public class ClusterEvaluation
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 6021 $");
   }
 
   /**

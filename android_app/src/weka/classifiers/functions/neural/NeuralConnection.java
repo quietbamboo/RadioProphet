@@ -1,34 +1,35 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    NeuralConnection.java
- *    Copyright (C) 2000-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 2000 University of Waikato, Hamilton, New Zealand
  */
 
 package weka.classifiers.functions.neural;
 
-import java.io.Serializable;
-
 import weka.core.RevisionHandler;
+
+import java.io.Serializable;
 
 /** 
  * Abstract unit in a NeuralNetwork.
  *
  * @author Malcolm Ware (mfw4@cs.waikato.ac.nz)
- * @version $Revision: 8034 $
+ * @version $Revision: 5402 $
  */
 public abstract class NeuralConnection
   implements Serializable, RevisionHandler {
@@ -296,96 +297,6 @@ public abstract class NeuralConnection
     m_y = y;
   }
   
-  
-  /**
-   * Call this function to determine if the point at x,y is on the unit.
-   * @param g The graphics context for font size info.
-   * @param x The x coord.
-   * @param y The y coord.
-   * @param w The width of the display.
-   * @param h The height of the display.
-   * @return True if the point is on the unit, false otherwise.
-   */
-  /*public boolean onUnit(Graphics g, int x, int y, int w, int h) {
-
-    int m = (int)(m_x * w);
-    int c = (int)(m_y * h);
-    if (x > m + 10 || x < m - 10 || y > c + 10 || y < c - 10) {
-      return false;
-    }
-    return true;
-
-  }*/
-  
-  /**
-   * Call this function to draw the node.
-   * @param g The graphics context.
-   * @param w The width of the drawing area.
-   * @param h The height of the drawing area.
-   */
-  /*public void drawNode(Graphics g, int w, int h) {
-    
-    if ((m_type & OUTPUT) == OUTPUT) {
-      g.setColor(Color.orange);
-    }
-    else {
-      g.setColor(Color.red);
-    }
-    g.fillOval((int)(m_x * w) - 9, (int)(m_y * h) - 9, 19, 19);
-    g.setColor(Color.gray);
-    g.fillOval((int)(m_x * w) - 5, (int)(m_y * h) - 5, 11, 11);
-  }*/
-
-  /**
-   * Call this function to draw the node highlighted.
-   * @param g The graphics context.
-   * @param w The width of the drawing area.
-   * @param h The height of the drawing area.
-   */
-  /*public void drawHighlight(Graphics g, int w, int h) {
-   
-    drawNode(g, w, h);
-    g.setColor(Color.yellow);
-    g.fillOval((int)(m_x * w) - 5, (int)(m_y * h) - 5, 11, 11);
-  }*/
-
-  /** 
-   * Call this function to draw the nodes input connections.
-   * @param g The graphics context.
-   * @param w The width of the drawing area.
-   * @param h The height of the drawing area.
-   */
-  /*public void drawInputLines(Graphics g, int w, int h) {
-
-    g.setColor(Color.black);
-    
-    int px = (int)(m_x * w);
-    int py = (int)(m_y * h);
-    for (int noa = 0; noa < m_numInputs; noa++) {
-      g.drawLine((int)(m_inputList[noa].getX() * w)
-		 , (int)(m_inputList[noa].getY() * h)
-		 , px, py);
-    }
-  }*/
-
-  /**
-   * Call this function to draw the nodes output connections.
-   * @param g The graphics context.
-   * @param w The width of the drawing area.
-   * @param h The height of the drawing area.
-   */
-  /*public void drawOutputLines(Graphics g, int w, int h) {
-    
-    g.setColor(Color.black);
-    
-    int px = (int)(m_x * w);
-    int py = (int)(m_y * h);
-    for (int noa = 0; noa < m_numOutputs; noa++) {
-      g.drawLine(px, py
-		 , (int)(m_outputList[noa].getX() * w)
-		 , (int)(m_outputList[noa].getY() * h));
-    }
-  }*/
 
 
   /**

@@ -1,35 +1,31 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    JRip.java
- *    Copyright (C) 2001-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 2001 University of Waikato, Hamilton, New Zealand
  */
 
 package weka.classifiers.rules;
 
-import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Random;
-import java.util.Vector;
-
+import weka.classifiers.Classifier;
 import weka.classifiers.AbstractClassifier;
 import weka.core.AdditionalMeasureProducer;
 import weka.core.Attribute;
 import weka.core.Capabilities;
-import weka.core.Capabilities.Capability;
 import weka.core.Copyable;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -38,13 +34,19 @@ import weka.core.Option;
 import weka.core.RevisionHandler;
 import weka.core.RevisionUtils;
 import weka.core.TechnicalInformation;
-import weka.core.TechnicalInformation.Field;
-import weka.core.TechnicalInformation.Type;
 import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
 import weka.core.WeightedInstancesHandler;
+import weka.core.Capabilities.Capability;
+import weka.core.TechnicalInformation.Field;
+import weka.core.TechnicalInformation.Type;
 import weka.filters.Filter;
 import weka.filters.supervised.attribute.ClassOrder;
+
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.Vector;
 
 /**
  <!-- globalinfo-start -->
@@ -131,7 +133,7 @@ import weka.filters.supervised.attribute.ClassOrder;
  *
  * @author Xin Xu (xx5@cs.waikato.ac.nz)
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
- * @version $Revision: 8118 $
+ * @version $Revision: 6041 $
  */
 public class JRip 
   extends AbstractClassifier 
@@ -667,7 +669,7 @@ public class JRip
    * the corresponding value.  There are two inherited classes, namely NumericAntd
    * and NominalAntd in which the attributes are numeric and nominal respectively.
    */    
-  public abstract class Antd 
+  private abstract class Antd 
     implements WeightedInstancesHandler, Copyable, Serializable, RevisionHandler {
 
     /** for serialization */
@@ -732,14 +734,14 @@ public class JRip
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8118 $");
+      return RevisionUtils.extract("$Revision: 6041 $");
     }
   }
     
   /** 
    * The antecedent with numeric attribute
    */
-  public class 
+  private class 
     NumericAntd extends Antd {
     
     /** for serialization */
@@ -934,7 +936,7 @@ public class JRip
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8118 $");
+      return RevisionUtils.extract("$Revision: 6041 $");
     }
   }
     
@@ -942,7 +944,7 @@ public class JRip
   /** 
    * The antecedent with nominal attribute
    */
-  public class NominalAntd 
+  private class NominalAntd 
     extends Antd {
 	
     /** for serialization */
@@ -1058,7 +1060,7 @@ public class JRip
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8118 $");
+      return RevisionUtils.extract("$Revision: 6041 $");
     }
   }
 
@@ -1072,7 +1074,7 @@ public class JRip
    * select an antecedent and Reduced Error Prunning (REP) with the metric
    * of accuracy rate p/(p+n) or (TP+TN)/(P+N) is used to prune the rule. 
    */    
-  public class RipperRule 
+  protected class RipperRule 
     extends Rule {
     
     /** for serialization */
@@ -1151,15 +1153,6 @@ public class JRip
       else
 	return (m_Antds.size() > 0);
     }      
-    
-    /**
-     * Return the antecedents
-     * 
-     * @return the vector of antecedents
-     */
-    public FastVector getAntds() {
-      return m_Antds;
-    }
 	
     /** 
      * the number of antecedents of the rule
@@ -1430,7 +1423,7 @@ public class JRip
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8118 $");
+      return RevisionUtils.extract("$Revision: 6041 $");
     }
   }
 
@@ -2054,7 +2047,7 @@ public class JRip
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8118 $");
+    return RevisionUtils.extract("$Revision: 6041 $");
   }
     
   /**

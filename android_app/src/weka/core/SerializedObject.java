@@ -1,25 +1,29 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    SerializedObject.java
- *    Copyright (C) 2001-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 2001 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.core;
+
+import weka.core.scripting.Jython;
+import weka.core.scripting.JythonSerializableObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -32,16 +36,13 @@ import java.io.Serializable;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import weka.core.scripting.Jython;
-import weka.core.scripting.JythonSerializableObject;
-
 /**
  * Class for storing an object in serialized form in memory. It can be used 
  * to make deep copies of objects, and also allows compression to conserve
  * memory. <p>
  *
  * @author Richard Kirkby (rbk1@cs.waikato.ac.nz)
- * @version $Revision: 8034 $ 
+ * @version $Revision: 5018 $ 
  */
 public class SerializedObject
   implements Serializable, RevisionHandler {
@@ -164,6 +165,6 @@ public class SerializedObject
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 5018 $");
   }
 }

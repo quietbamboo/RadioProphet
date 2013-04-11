@@ -1,16 +1,17 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
@@ -85,7 +86,7 @@ import java.util.Vector;
  * @author Sham Kakade (original C++ code)
  * @author John Langford (original C++ code)
  * @author Ashraf M. Kibriya (amk14[at-the-rate]cs[dot]waikato[dot]ac[dot]nz) (Java port)
- * @version $Revision: 8034 $
+ * @version $Revision: 5953 $
  */
 public class CoverTree
   extends NearestNeighbourSearch
@@ -98,7 +99,7 @@ public class CoverTree
    * class representing a node of the cover tree.
    * 
    * @author Ashraf M. Kibriya (amk14[at-the-rate]cs[dot]waikato[dot]ac[dot]nz)
-   * @version $Revision: 8034 $
+   * @version $Revision: 5953 $
    */
   public class CoverTreeNode
     implements Serializable, RevisionHandler {
@@ -172,7 +173,7 @@ public class CoverTree
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 5953 $");
     }
   }
 
@@ -181,7 +182,7 @@ public class CoverTree
    * point p.
    * 
    * @author Ashraf M. Kibriya (amk14[at-the-rate]cs[dot]waikato[dot]ac[dot]nz)
-   * @version $Revision: 8034 $
+   * @version $Revision: 5953 $
    */
   private class DistanceNode
     implements RevisionHandler {
@@ -211,7 +212,7 @@ public class CoverTree
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 5953 $");
     }
   }
 
@@ -682,7 +683,7 @@ public class CoverTree
    * i.e. the minimum size of the heap is k.
    * 
    * @author Ashraf M. Kibriya (amk14[at-the-rate]cs[dot]waikato[dot]ac[dot]nz)
-   * @version $Revision: 8034 $
+   * @version $Revision: 5953 $
    */
   protected class MyHeap
     implements RevisionHandler {
@@ -888,7 +889,7 @@ public class CoverTree
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 5953 $");
     }
   }
   
@@ -896,7 +897,7 @@ public class CoverTree
    * A class for storing data about a neighboring instance.
    * 
    * @author Ashraf M. Kibriya (amk14[at-the-rate]cs[dot]waikato[dot]ac[dot]nz)
-   * @version $Revision: 8034 $
+   * @version $Revision: 5953 $
    */
   protected class MyHeapElement
     implements RevisionHandler {
@@ -925,7 +926,7 @@ public class CoverTree
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 5953 $");
     }
   }
   
@@ -933,7 +934,7 @@ public class CoverTree
    * stores a CoverTreeNode and its distance to the current query node.
    * 
    * @author Ashraf M. Kibriya (amk14[at-the-rate]cs[dot]waikato[dot]ac[dot]nz)
-   * @version $Revision: 8034 $
+   * @version $Revision: 5953 $
    */
   private class d_node
     implements RevisionHandler {
@@ -960,7 +961,7 @@ public class CoverTree
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 8034 $");
+      return RevisionUtils.extract("$Revision: 5953 $");
     }
   };
 
@@ -1941,7 +1942,7 @@ public class CoverTree
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
+    return RevisionUtils.extract("$Revision: 5953 $");
   }
 
   /** 

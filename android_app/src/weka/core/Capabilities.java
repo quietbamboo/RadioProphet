@@ -1,24 +1,27 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  * Capabilities.java
- * Copyright (C) 2006-2012 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2006 University of Waikato, Hamilton, New Zealand
  */
 
 package weka.core;
+
+import weka.core.converters.ConverterUtils.DataSource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,8 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-
-import weka.core.converters.ConverterUtils.DataSource;
 
 /**
  * A class that describes the capabilites (e.g., handling certain types of
@@ -63,7 +64,7 @@ import weka.core.converters.ConverterUtils.DataSource;
  * </pre>
  * 
  * @author  FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 9134 $
+ * @version $Revision: 6447 $
  */
 public class Capabilities 
   implements Cloneable, Serializable, RevisionHandler {
@@ -272,11 +273,6 @@ public class Capabilities
     m_MissingValuesTest          = Boolean.parseBoolean(PROPERTIES.getProperty("MissingValuesTest", "true")) && m_Test;
     m_MissingClassValuesTest     = Boolean.parseBoolean(PROPERTIES.getProperty("MissingClassValuesTest", "true")) && m_Test;
     m_MinimumNumberInstancesTest = Boolean.parseBoolean(PROPERTIES.getProperty("MinimumNumberInstancesTest", "true")) && m_Test;
-    
-    if (owner instanceof weka.classifiers.UpdateableClassifier ||
-        owner instanceof weka.clusterers.UpdateableClusterer) {
-      setMinimumNumberInstances(0);
-    }
   }
   
   /**
@@ -1231,7 +1227,7 @@ public class Capabilities
 	MultiInstanceCapabilitiesHandler handler = (MultiInstanceCapabilitiesHandler) getOwner();
 	cap = handler.getMultiInstanceCapabilities();
 	boolean result;
-	if (data.numInstances() > 0 && data.attribute(1).numValues() > 0)
+	if (data.numInstances() > 0)
 	  result = cap.test(data.attribute(1).relation(0));
 	else
 	  result = cap.test(data.attribute(1).relation());
@@ -1677,6 +1673,6 @@ public class Capabilities
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9134 $");
+    return RevisionUtils.extract("$Revision: 6447 $");
   }
 }

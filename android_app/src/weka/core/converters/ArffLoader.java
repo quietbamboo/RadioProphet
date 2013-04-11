@@ -1,25 +1,35 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    ArffLoader.java
- *    Copyright (C) 2000-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 2000 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.core.converters;
+
+import weka.core.Attribute;
+import weka.core.Instance;
+import weka.core.DenseInstance;
+import weka.core.Instances;
+import weka.core.RevisionHandler;
+import weka.core.RevisionUtils;
+import weka.core.SparseInstance;
+import weka.core.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,16 +42,6 @@ import java.io.StringReader;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.List;
-
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.RevisionHandler;
-import weka.core.RevisionUtils;
-import weka.core.SparseInstance;
-import weka.core.Utils;
 
 /**
  <!-- globalinfo-start -->
@@ -51,13 +51,12 @@ import weka.core.Utils;
  *
  * @author Mark Hall (mhall@cs.waikato.ac.nz)
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 9652 $
+ * @version $Revision: 7048 $
  * @see Loader
  */
 public class ArffLoader 
   extends AbstractFileLoader 
-  implements BatchConverter, IncrementalConverter, 
-  URLSourcedLoader {
+  implements BatchConverter, IncrementalConverter, URLSourcedLoader {
 
   /** for serialization */
   static final long serialVersionUID = 2726929550544048587L;
@@ -73,7 +72,7 @@ public class ArffLoader
   protected transient Reader m_sourceReader = null;
 
   /** The parser for the ARFF file */
-  protected transient ArffReader m_ArffReader = null;  
+  protected transient ArffReader m_ArffReader = null;
   
   /**
    * Reads data from an ARFF file, either in incremental or batch mode. <p/>
@@ -101,7 +100,7 @@ public class ArffLoader
    * @author  Eibe Frank (eibe@cs.waikato.ac.nz)
    * @author  Len Trigg (trigg@cs.waikato.ac.nz)
    * @author  fracpete (fracpete at waikato dot ac dot nz)
-   * @version $Revision: 9652 $
+   * @version $Revision: 7048 $
    */
   public static class ArffReader
     implements RevisionHandler {
@@ -114,18 +113,12 @@ public class ArffLoader
 
     /** Buffer of indices for sparse instance */
     protected int[] m_IndicesBuffer;
-    
-    protected List<Integer> m_stringAttIndices;
 
     /** the actual data */
     protected Instances m_Data;
 
     /** the number of lines read so far */
     protected int m_Lines;
-    
-    protected boolean m_batchMode = true;
-    
-    protected boolean m_retainStringValues = true;
     
     /**
      * Reads the data completely from the reader. The data can be accessed
@@ -150,10 +143,6 @@ public class ArffLoader
       compactify();
     }
     
-    public ArffReader(Reader reader, int capacity) throws IOException {
-      this(reader, capacity, true);
-    }
-    
     /**
      * Reads only the header and reserves the specified space for instances.
      * Further instances can be read via <code>readInstance()</code>.
@@ -165,16 +154,7 @@ public class ArffLoader
      * @see				#getStructure()
      * @see				#readInstance(Instances)
      */
-    public ArffReader(Reader reader, int capacity, boolean batch) 
-      throws IOException {
-      
-      m_batchMode = batch;
-      if (batch) {
-        m_retainStringValues = true;
-      } else {
-        m_retainStringValues = false;
-      }
-      
+    public ArffReader(Reader reader, int capacity) throws IOException {
       if (capacity < 0)
 	throw new IllegalArgumentException("Capacity has to be positive!");
 
@@ -196,7 +176,7 @@ public class ArffLoader
      * @see			#getData()
      */
     public ArffReader(Reader reader, Instances template, int lines) throws IOException {
-      this(reader, template, lines, 100, true);
+      this(reader, template, lines, 100);
 
       Instance inst;
       while ((inst = readInstance(m_Data)) != null) {
@@ -219,30 +199,6 @@ public class ArffLoader
      * @see			#getData()
      */
     public ArffReader(Reader reader, Instances template, int lines, int capacity) throws IOException {
-      this(reader, template, lines, capacity, false);
-    }
-    
-    /**
-     * Initializes the reader without reading the header according to the 
-     * specified template. The data must be read via the 
-     * <code>readInstance()</code> method.
-     * 
-     * @param reader            the reader to use
-     * @param template          the template header
-     * @param lines             the lines read so far
-     * @param capacity          the capacity of the new dataset
-     * @param batch             true if the values of string attributes should be collected in the header 
-     * @throws IOException      if something goes wrong
-     * @see                     #getData()
-     */
-    public ArffReader(Reader reader, Instances template, int lines, int capacity, boolean batch) throws IOException {
-      m_batchMode = batch;
-      if (batch) {
-        m_retainStringValues = true;
-      } else {
-        m_retainStringValues = false;
-      }
-      
       m_Lines     = lines;
       m_Tokenizer = new StreamTokenizer(reader);
       initTokenizer();
@@ -260,15 +216,6 @@ public class ArffLoader
     protected void initBuffers() {
       m_ValueBuffer = new double[m_Data.numAttributes()];
       m_IndicesBuffer = new int[m_Data.numAttributes()];
-      
-      m_stringAttIndices = new ArrayList();
-      if (m_Data.checkForStringAttributes()) {
-        for (int i = 0; i < m_Data.numAttributes(); i++) {
-          if (m_Data.attribute(i).isString()) {
-            m_stringAttIndices.add(i);
-          }
-        }
-      }
     }
     
     /**
@@ -490,14 +437,6 @@ public class ArffLoader
     protected Instance getInstanceSparse(boolean flag) throws IOException {
       int valIndex, numValues = 0, maxIndex = -1;
       
-      // if reading incrementally, and we have string values, make sure that all string
-      // attributes are initialized to "0" with the dummy first value
-      if (!m_batchMode && !m_retainStringValues && m_stringAttIndices != null) {
-        for (int i = 0; i < m_stringAttIndices.size(); i++) {
-          m_Data.attribute(m_stringAttIndices.get(i)).setStringValue(Attribute.DUMMY_STRING_VAL);
-        }
-      }
-      
       // Get values
       do {
         // Get index
@@ -553,14 +492,8 @@ public class ArffLoader
   	  }
             break;
   	case Attribute.STRING:
-  	  if (m_batchMode || m_retainStringValues) {
   	  m_ValueBuffer[numValues] = 
   	    m_Data.attribute(m_IndicesBuffer[numValues]).addStringValue(m_Tokenizer.sval);
-  	  } else {
-  	    m_ValueBuffer[numValues] = 1;
-            m_Data.attribute(m_IndicesBuffer[numValues]).setStringValue(Attribute.DUMMY_STRING_VAL);
-            m_Data.attribute(m_IndicesBuffer[numValues]).addStringValue(m_Tokenizer.sval);
-  	  }
             break;
           case Attribute.DATE:
             try {
@@ -657,12 +590,7 @@ public class ArffLoader
   	  }
             break;
   	case Attribute.STRING:
-  	  if (m_batchMode || m_retainStringValues) {
-  	    instance[i] = m_Data.attribute(i).addStringValue(m_Tokenizer.sval);
-  	  } else {
-  	    instance[i] = 0;
-  	    m_Data.attribute(i).setStringValue(m_Tokenizer.sval);
-  	  }
+  	  instance[i] = m_Data.attribute(i).addStringValue(m_Tokenizer.sval);
             break;
           case Attribute.DATE:
             try {
@@ -901,7 +829,7 @@ public class ArffLoader
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 9652 $");
+      return RevisionUtils.extract("$Revision: 7048 $");
     }
   }
 
@@ -950,7 +878,6 @@ public class ArffLoader
    */
   public void reset() throws IOException {
     m_structure = null;
-    m_ArffReader = null;
     setRetrieval(NONE);
     
     if (m_File != null && !(new File(m_File).isDirectory())) {
@@ -1019,7 +946,7 @@ public class ArffLoader
   public String retrieveURL() {
     return m_URL;
   }
-  
+
   /**
    * Resets the Loader object and sets the source of the data set to be 
    * the supplied InputStream.
@@ -1048,8 +975,8 @@ public class ArffLoader
         throw new IOException("No source has been specified");
       }
       
-      try {       
-        m_ArffReader = new ArffReader(m_sourceReader, 1, (getRetrieval() == BATCH));       
+      try {
+	m_ArffReader = new ArffReader(m_sourceReader, 1);
 	m_structure  = m_ArffReader.getStructure();
       } catch (Exception ex) {
 	throw new IOException("Unable to determine structure as arff (Reason: " + ex.toString() + ").");
@@ -1069,33 +996,28 @@ public class ArffLoader
    */
   public Instances getDataSet() throws IOException {
 
-    Instances insts = null;
-    try {
-      if (m_sourceReader == null) {
-        throw new IOException("No source has been specified");
-      }
-      if (getRetrieval() == INCREMENTAL) {
-        throw new IOException("Cannot mix getting Instances in both incremental and batch modes");
-      }
-      setRetrieval(BATCH);
-      if (m_structure == null) {
-        getStructure();
-      }
-
-      // Read all instances
-      insts = new Instances(m_structure, 0);
-      Instance inst;
-      while ((inst = m_ArffReader.readInstance(m_structure)) != null)
-        insts.add(inst);
-
-      // Instances readIn = new Instances(m_structure);
-
-      // close the stream
-    } finally {
-      m_sourceReader.close();
+    if (m_sourceReader == null) {
+      throw new IOException("No source has been specified");
+    }
+    if (getRetrieval() == INCREMENTAL) {
+      throw new IOException("Cannot mix getting Instances in both incremental and batch modes");
+    }
+    setRetrieval(BATCH);
+    if (m_structure == null) {
+      getStructure();
     }
 
-    return insts;
+    // Read all instances
+    Instance inst;
+    while ((inst = m_ArffReader.readInstance(m_structure)) != null)
+      m_structure.add(inst);
+    
+    Instances readIn = new Instances(m_structure);
+
+    // close the stream
+    m_sourceReader.close();
+    
+    return readIn;
   }
 
   /**
@@ -1143,7 +1065,7 @@ public class ArffLoader
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9652 $");
+    return RevisionUtils.extract("$Revision: 7048 $");
   }
 
   /**

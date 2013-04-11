@@ -1,7 +1,7 @@
 # Customises the list of options given by the GenericObjectEditor
 # for various superclasses.
 #
-# Version: $Revision: 9117 $
+# Version: $Revision: 6624 $
 
 # Whether to use the dynamic approach or not (true|false). In case of
 # "false" the old GenericObjectEditor.props file is used:
@@ -162,10 +162,6 @@ weka.gui.visualize.plugins.ErrorVisualizePlugin=\
 weka.gui.visualize.plugins.AssociationRuleVisualizePlugin=\
  weka.gui.visualize.plugins
 
-#List of Explorer classifier panel launch handler plugins
-weka.gui.explorer.ClassifierPanelLaunchHandlerPlugin=\
- weka.gui.explorer
-
 # List of writers for outputting graphics
 weka.gui.visualize.JComponentWriter=\
  weka.gui.visualize
@@ -185,11 +181,6 @@ weka.core.converters.AbstractFileLoader=\
 # List of file savers
 weka.core.converters.AbstractFileSaver=\
  weka.core.converters
-
-# List of partition generators
-weka.core.PartitionGenerator=\
- weka.classifiers.trees,\
- weka.classifiers.meta
 
 # List of snowball stemmers.
 #

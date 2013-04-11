@@ -1,25 +1,34 @@
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  *    ConverterUtils.java
- *    Copyright (C) 2000-2012 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 2000 University of Waikato, Hamilton, New Zealand
  *
  */
 
 package weka.core.converters;
+
+import weka.core.ClassDiscovery;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.RevisionHandler;
+import weka.core.RevisionUtils;
+//import weka.gui.GenericObjectEditor;
+import weka.gui.GenericPropertiesCreator;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,20 +44,12 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
-import weka.core.ClassDiscovery;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.RevisionHandler;
-import weka.core.RevisionUtils;
-import weka.gui.GenericObjectEditor;
-import weka.gui.GenericPropertiesCreator;
-
 /**
  * Utility routines for the converter package.
  *
  * @author Mark Hall (mhall@cs.waikato.ac.nz)
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 9285 $
+ * @version $Revision: 7009 $
  * @see Serializable
  */
 public class ConverterUtils
@@ -69,7 +70,7 @@ public class ConverterUtils
    * order to provide a unified interface to files and already loaded datasets.
    * 
    * @author FracPete (fracpete at waikato dot ac dot nz)
-   * @version $Revision: 9285 $
+   * @version $Revision: 7009 $
    * @see #hasMoreElements(Instances)
    * @see #nextElement(Instances)
    * @see #reset()
@@ -513,7 +514,7 @@ public class ConverterUtils
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 9285 $");
+      return RevisionUtils.extract("$Revision: 7009 $");
     }
   }
 
@@ -523,7 +524,7 @@ public class ConverterUtils
    * It is the logical counterpart to <code>DataSource</code>.
    * 
    * @author FracPete (fracpete at waikato dot ac dot nz)
-   * @version $Revision: 9285 $
+   * @version $Revision: 7009 $
    * @see DataSource
    */
   public static class DataSink
@@ -666,7 +667,7 @@ public class ConverterUtils
      * @return		the revision
      */
     public String getRevision() {
-      return RevisionUtils.extract("$Revision: 9285 $");
+      return RevisionUtils.extract("$Revision: 7009 $");
     }
   }
   
@@ -755,12 +756,12 @@ public class ConverterUtils
     finally {
       // loaders
       if (m_FileLoaders.size() == 0) {
-        classnames = GenericObjectEditor.getClassnames(AbstractFileLoader.class.getName());
-        if (classnames.size() > 0)
-          m_FileLoaders = getFileConverters(
-                            classnames,
-                            new String[]{FileSourcedConverter.class.getName()});
-        else
+//        classnames = GenericObjectEditor.getClassnames(AbstractFileLoader.class.getName());
+//        if (classnames.size() > 0)
+//          m_FileLoaders = getFileConverters(
+//                            classnames,
+//                            new String[]{FileSourcedConverter.class.getName()});
+//        else
           m_FileLoaders = getFileConverters(
                             CORE_FILE_LOADERS,
                             new String[]{FileSourcedConverter.class.getName()});
@@ -768,14 +769,14 @@ public class ConverterUtils
 
       // URL loaders
       if (m_URLFileLoaders.size() == 0) {
-        classnames = GenericObjectEditor.getClassnames(AbstractFileLoader.class.getName());
-        if (classnames.size() > 0)
-          m_URLFileLoaders = getFileConverters(
-                               classnames,
-                               new String[]{
-                                   FileSourcedConverter.class.getName(), 
-                                   URLSourcedLoader.class.getName()});
-        else
+//        classnames = GenericObjectEditor.getClassnames(AbstractFileLoader.class.getName());
+//        if (classnames.size() > 0)
+//          m_URLFileLoaders = getFileConverters(
+//                               classnames,
+//                               new String[]{
+//                                   FileSourcedConverter.class.getName(), 
+//                                   URLSourcedLoader.class.getName()});
+//        else
           m_URLFileLoaders = getFileConverters(
                                CORE_FILE_LOADERS,
                                new String[]{
@@ -785,19 +786,19 @@ public class ConverterUtils
 
       // savers
       if (m_FileSavers.size() == 0) {
-        classnames = GenericObjectEditor.getClassnames(AbstractFileSaver.class.getName());
-        if (classnames.size() > 0)
-          m_FileSavers = getFileConverters(
-                           classnames,
-                           new String[]{FileSourcedConverter.class.getName()});
-        else
+//        classnames = GenericObjectEditor.getClassnames(AbstractFileSaver.class.getName());
+//        if (classnames.size() > 0)
+//          m_FileSavers = getFileConverters(
+//                           classnames,
+//                           new String[]{FileSourcedConverter.class.getName()});
+//        else
           m_FileSavers = getFileConverters(
                            CORE_FILE_SAVERS,
                            new String[]{FileSourcedConverter.class.getName()});
       }
     }
     
-    weka.gui.ConverterFileChooser.initDefaultFilters();
+//    weka.gui.ConverterFileChooser.initDefaultFilters();
   }
   
   /**
@@ -881,7 +882,15 @@ public class ConverterUtils
    */
   public static void getFirstToken(StreamTokenizer tokenizer) 
     throws IOException {
-    StreamTokenizerUtils.getFirstToken(tokenizer);
+    
+    while (tokenizer.nextToken() == StreamTokenizer.TT_EOL){};
+    if ((tokenizer.ttype == '\'') ||
+	(tokenizer.ttype == '"')) {
+      tokenizer.ttype = StreamTokenizer.TT_WORD;
+    } else if ((tokenizer.ttype == StreamTokenizer.TT_WORD) &&
+	       (tokenizer.sval.equals("?"))) {
+      tokenizer.ttype = '?';
+    }
   }
 
   /**
@@ -890,8 +899,20 @@ public class ConverterUtils
    * @param tokenizer 		the stream tokenizer
    * @throws IOException 	if reading the next token fails
    */
-  public static void getToken(StreamTokenizer tokenizer) throws IOException {    
-    StreamTokenizerUtils.getToken(tokenizer);
+  public static void getToken(StreamTokenizer tokenizer) throws IOException {
+    
+    tokenizer.nextToken();
+    if (tokenizer.ttype== StreamTokenizer.TT_EOL) {
+      return;
+    }
+
+    if ((tokenizer.ttype == '\'') ||
+	(tokenizer.ttype == '"')) {
+      tokenizer.ttype = StreamTokenizer.TT_WORD;
+    } else if ((tokenizer.ttype == StreamTokenizer.TT_WORD) &&
+	       (tokenizer.sval.equals("?"))) {
+      tokenizer.ttype = '?';
+    }
   }
 
   /**
@@ -1158,6 +1179,6 @@ public class ConverterUtils
    * @return		the revision
    */
   public String getRevision() {
-    return RevisionUtils.extract("$Revision: 9285 $");
+    return RevisionUtils.extract("$Revision: 7009 $");
   }
 }
