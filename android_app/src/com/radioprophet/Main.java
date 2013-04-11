@@ -35,6 +35,7 @@ public class Main extends Activity {
 			Log.d(logtag,"onClick() ended - start button");
 		 NaiveBayesUpdateable nb = new NaiveBayesUpdateable();
 		 ArffLoader loader = new ArffLoader();
+		 Util.makeInstance();
 		}
 	};
 

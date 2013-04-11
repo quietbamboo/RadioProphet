@@ -40,13 +40,13 @@ public class Util {
     vals = new double[data.numAttributes()];
     vals[0] = Math.PI;
     vals[1] = Math.E;
-    data.add(new DenseInstance(3, vals));
+    data.add(new DenseInstance(1.0, vals));
 
     // second instance
     vals = new double[data.numAttributes()];  // important: needs NEW array!
     vals[0] = Math.PI;
     vals[1] = Math.E;
-    data.add(new Instance(1.0, vals));
+    data.add(new DenseInstance(1.0, vals));
 
     // 4. output data
     System.out.println(data);
