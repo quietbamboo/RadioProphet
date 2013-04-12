@@ -1,5 +1,8 @@
 package com.radioprophet;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import android.app.Activity;
@@ -31,22 +34,51 @@ public class Main extends Activity {
       Toast.makeText(Main.this, "The Start button was clicked.", Toast.LENGTH_LONG).show();
       Logger.d("onClick() ended - start button");
 
-      //NaiveBayesUpdateable nb = new NaiveBayesUpdateable();      
+      //NaiveBayesUpdateable nb = new NaiveBayesUpdateable();
+
       try {
-        Instances data = Util.makeTestInstance();
-        String[] options = new String[1];
-        options[0] = "-U";            // unpruned tree
-        J48 tree = new J48();         // new instance of tree
-        tree.setUnpruned(true);        // using an unpruned J48
-        tree.setOptions(options);
-        tree.buildClassifier(data);   // build classifier
+        BufferedReader br = new BufferedReader(new FileReader("/data/local/ibtsample.data"));
+        String line;
+        String store[] = new String[BurstManager.ALPHA];
+        int si = 0;
+        int lc = 0;
+        for (int i = 0 ; i < BurstManager.ALPHA ; i++) {
+          store[i] = "";
+        }
         
-        Burst burst = new Burst(80, 1, true);
-        Logger.e("classification result " + tree.classifyInstance(burst.instance));
+        int samples = 0;
+        long train_time = 0;
+        long predict_time = 0;
+        int correct = 0;
+        long start;
+        while ((line = br.readLine()) != null) {
+          if (lc >= BurstManager.ALPHA) {
+            //train model with previous 1000 lines and predict this line
+            train_time += BurstManager.trainModel(store, si);
+            Burst burst = new Burst(line, false);
+            
+            start = System.currentTimeMillis();
+            int p = (int) BurstManager.tree.classifyInstance(burst.instance);
+            predict_time += System.currentTimeMillis() - start;
+            
+            samples++;
+            if (burst.actual == p)
+              correct++;
+            
+            Logger.e("samples " + samples + " accuracy " + (double) correct / (double) samples +
+                " train_time " + train_time / 1000.0 / samples + 
+                " predict_time " + predict_time / 1000.0 / samples);
+          }
+
+          store[si] = line;
+          si = (si + 1) % BurstManager.ALPHA;
+          lc++;
+        }
+
       } catch (Exception e) {
         e.printStackTrace();
       }
-      
+
     }
   };
 

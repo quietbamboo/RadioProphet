@@ -1,0 +1,19 @@
+//print current burst stats
+printf("BURST %lld %lld %lld %lld %.5lf %d ", allIBT, shortIBT, downBytes, upBytes, sessionLen, packetNum);
+//1 - 7
+
+printf("%d %d %d %d %d %d ", dir1, port1, len1, protocol1, flags1, appID1);
+//8 - 13
+
+printf("%d %d %d %d %d %d ", dir2, port2, len2, protocol2, flags2, appID2);
+//14 - 19
+
+printf("%d %d %d %d %d %d ", dir3, port3, len3, protocol3, flags3, appID3);
+//20 - 25
+
+//last packet
+printf("%.5lf %.5lf %.5lf %.5lf %d ", previousIBT, previousSessionLen, sp[lastID].lastPower, sp[lastID].lastEvent, sp[lastID].lastType);
+//26 - 30
+
+printf("%d %.5lf %d %d\n", sp[lastID].isScreenOn, ibt, isShort, packetNumUp);
+//31, 32 - 33, 34
